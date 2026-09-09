@@ -1,0 +1,2032 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="description" content="NEXUS ARBITRAGE v3.1.0 — Premium P2P Arbitrage Terminal">
+    <title>NEXUS ARBITRAGE v3.1.0 · NEURA P2P</title>
+    <style>
+        /* ── reset & base ── */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0a0a0f;
+            --panel: #151520;
+            --panel2: #1f1f2e;
+            --purple: #7132f5;
+            --purple2: #5b1ecf;
+            --cyan: #00d4ff;
+            --green: #00ff41;
+            --red: #ff4d6d;
+            --yellow: #ffc857;
+            --text: rgba(255,255,255,.9);
+            --muted: #94a3b8;
+            --border: rgba(255,255,255,.07);
+            --glass: rgba(255,255,255,.04);
+            --shadow: 0 18px 50px rgba(0,0,0,.38);
+            --radius: 14px;
+            --radius-sm: 10px;
+            --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0; overflow-x: hidden;
+            background:
+                radial-gradient(800px 500px at 15% 0%, rgba(113,50,245,.14), transparent 60%),
+                radial-gradient(700px 500px at 100% 35%, rgba(0,212,255,.06), transparent 60%),
+                var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            letter-spacing: -.01em;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        main { flex: 1; }
+        button, input, select { font: inherit; }
+        button { cursor: pointer; border: none; background: none; color: inherit; }
+        a { color: inherit; text-decoration: none; }
+
+        * { scrollbar-width: thin; scrollbar-color: rgba(113,50,245,.45) rgba(255,255,255,.035); }
+        *::-webkit-scrollbar { width: 8px; height: 8px; }
+        *::-webkit-scrollbar-track { background: rgba(255,255,255,.025); }
+        *::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(113,50,245,.55), rgba(0,212,255,.28)); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+        *::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, rgba(113,50,245,.75), rgba(0,212,255,.45)); }
+
+        .hidden { display: none !important; }
+        .micro { font-size: 11px; color: var(--muted); }
+        .kicker { font-size: 10px; letter-spacing: .18em; color: #9d8add; }
+        .positive { color: #55f2a1; }
+        .cyan { color: var(--cyan); }
+        .tag { display: inline-flex; padding: 4px 8px; border-radius: 999px; font-size: 9px; border: 1px solid var(--border); color: var(--muted); background: rgba(255,255,255,.025); }
+        .tag.live { color: #75f2a8; border-color: rgba(117,242,168,.24); background: rgba(117,242,168,.06); }
+        .avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 12px; color: #fff; background: linear-gradient(135deg, #7132f5, #18b7ff); box-shadow: 0 0 20px rgba(113,50,245,.22); flex-shrink: 0; user-select: none; overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .avatar.sm { width: 28px; height: 28px; font-size: 10px; }
+        .avatar.lg { width: 54px; height: 54px; font-size: 18px; }
+
+        .brand-mark-svg { filter: drop-shadow(0 0 6px rgba(113,50,245,0.6)); flex-shrink: 0; }
+
+        .topbar { position: sticky; top: 0; z-index: 50; height: 76px; padding: 0 28px; display: flex; align-items: center; gap: 22px; background: rgba(10,10,15,.86); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+        .brand { display: flex; align-items: center; gap: 11px; min-width: 260px; }
+        .brand-copy { display: flex; flex-direction: column; line-height: .9; }
+        .brand-copy strong { font-size: 15px; letter-spacing: .13em; }
+        .brand-copy small { font-size: 9px; letter-spacing: .28em; color: var(--muted); margin-top: 4px; }
+        .version { padding: 5px 8px; border: 1px solid rgba(113,50,245,.35); background: rgba(113,50,245,.08); border-radius: 999px; color: #bfa8ff; font-size: 11px; white-space: nowrap; }
+        .nav { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; }
+        .nav a { padding: 10px 13px; color: var(--muted); font-size: 13px; border-radius: 8px; transition: background .15s, color .15s; }
+        .nav a:hover, .nav a.active { color: #fff; background: rgba(255,255,255,.05); }
+        .wallet-btn { display: flex; align-items: center; gap: 9px; border: 1px solid rgba(113,50,245,.45); background: linear-gradient(180deg, rgba(113,50,245,.18), rgba(91,30,207,.16)); color: #fff; padding: 11px 14px; border-radius: var(--radius-sm); box-shadow: 0 0 22px rgba(113,50,245,.12); transition: filter .2s; white-space: nowrap; }
+        .wallet-btn:hover { filter: brightness(1.08); }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #667085; box-shadow: 0 0 0 3px rgba(102,112,133,.08); transition: .25s ease; flex-shrink: 0; }
+        .status-dot.online { background: #35f58a; box-shadow: 0 0 0 3px rgba(53,245,138,.08), 0 0 12px rgba(53,245,138,.28); }
+        .status-dot.away { background: var(--yellow); box-shadow: 0 0 0 3px rgba(246,196,69,.08), 0 0 10px rgba(246,196,69,.18); }
+        .status-dot.offline { background: #667085; box-shadow: 0 0 0 3px rgba(102,112,133,.06); }
+        .presence-badge { padding: 4px 7px; border: 1px solid rgba(255,255,255,.045); border-radius: 999px; background: rgba(255,255,255,.018); backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); white-space: nowrap; font-size: 10px; display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
+        .presence-badge.online { color: #9df3bf; }
+        .presence-badge.away { color: #f6dc8e; }
+        .presence-badge.offline { color: #9aa3b2; }
+        .reply-time { font-size: 9px; margin-left: 4px; }
+
+        .verified {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            font-size: 9px;
+            font-weight: 600;
+            color: #0a0a0f;
+            background: #00d4ff;
+            border: 1px solid #00d4ff;
+            letter-spacing: .02em;
+            margin-left: 6px;
+            line-height: 1.4;
+            box-shadow: 0 0 12px rgba(0,212,255,.2);
+        }
+        .verified::before {
+            content: "✓";
+            font-weight: 700;
+            font-size: 10px;
+            line-height: 1;
+            display: inline-block;
+        }
+
+        .thumb-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 8px;
+        }
+        .thumb-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.1);
+            color: var(--muted);
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-size: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all .15s;
+        }
+        .thumb-btn:hover { background: rgba(255,255,255,.05); color: #fff; }
+        .thumb-btn.active-up { color: #4ade80; border-color: rgba(74,222,128,.3); }
+        .thumb-btn.active-down { color: #ff6b6b; border-color: rgba(255,107,107,.3); }
+
+        .shell { max-width: 1500px; margin: 0 auto; padding: 28px; }
+        .grid12 { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 20px; }
+        .span12 { grid-column: span 12; }
+        .span8 { grid-column: span 8; }
+        .span7 { grid-column: span 7; }
+        .span6 { grid-column: span 6; }
+        .span5 { grid-column: span 5; }
+        .span4 { grid-column: span 4; }
+        .span3 { grid-column: span 3; }
+        .span2 { grid-column: span 2; }
+
+        .card { background: linear-gradient(180deg, rgba(21,21,32,.82), rgba(15,15,24,.78)); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); overflow: hidden; }
+        .pad { padding: 18px; }
+        .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
+        .section-head h2 { font-size: 20px; margin: 6px 0 0; letter-spacing: -.03em; }
+        .panel-tools { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+
+        .hero { padding: 20px 0 18px; }
+        .hero-copy { padding: 32px 0 10px; }
+        .eyebrow { display: flex; align-items: center; gap: 7px; font-size: 10px; letter-spacing: .18em; color: #9d8add; }
+        .live-pulse { width: 7px; height: 7px; border-radius: 50%; background: #35f58a; box-shadow: 0 0 16px #35f58a; animation: pulse-dot 1.8s ease-in-out infinite; }
+        @keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(.8); } }
+        .hero h1 { font-size: clamp(38px,5.2vw,72px); line-height: .95; letter-spacing: -.045em; margin: 16px 0 14px; max-width: 880px; }
+        .hero h1 em { font-style: normal; background: linear-gradient(90deg, #fff, #bda8ff, #00d4ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero p { max-width: 780px; color: var(--muted); line-height: 1.65; font-size: 15px; }
+
+        .core-card { padding: 18px; align-self: end; }
+        .core-title { font-weight: 700; letter-spacing: .05em; }
+        .core-status { color: #55f2a1; font-size: 11px; }
+        .progress { height: 5px; background: rgba(255,255,255,.05); border-radius: 999px; overflow: hidden; margin: 14px 0; }
+        .progress span { display: block; height: 100%; width: 78%; background: linear-gradient(90deg, var(--purple), var(--cyan)); box-shadow: 0 0 20px rgba(0,212,255,.35); border-radius: 999px; transition: width .6s ease; }
+
+        .stats .card { padding: 16px; }
+        .stat-label { font-size: 10px; letter-spacing: .16em; color: var(--muted); text-transform: uppercase; }
+        .stat-value { font-size: 28px; font-weight: 800; letter-spacing: -.04em; margin-top: 10px; }
+        .sub { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+        .filterbar { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .seg { display: flex; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .seg button { border: 0; background: transparent; color: var(--muted); padding: 9px 12px; font-size: 12px; transition: background .15s, color .15s; }
+        .seg button.active { background: rgba(113,50,245,.18); color: #fff; }
+        .select, .search { background: #0f1017; border: 1px solid var(--border); color: #e8edf7; padding: 9px 11px; border-radius: 8px; font-size: 12px; outline: none; min-width: 0; }
+        .select:focus, .search:focus { border-color: rgba(113,50,245,.65); }
+        .search { min-width: 180px; flex: 1; }
+        .amount-filter { display: flex; align-items: center; gap: 7px; padding: 4px 8px 4px 10px; border: 1px solid var(--border); background: #0f1017; border-radius: 8px; transition: border-color .2s, box-shadow .2s; }
+        .amount-filter label { font-size: 9px; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+        .amount-input { width: 105px; background: transparent; border: 0; outline: none; color: #fff; font-size: 12px; }
+        .amount-input::placeholder { color: #687386; }
+        .amount-help { font-size: 9px; color: #778195; white-space: nowrap; }
+        .amount-filter.invalid { border-color: rgba(255,91,91,.55); box-shadow: 0 0 0 2px rgba(255,91,91,.05); }
+        .amount-filter.invalid .amount-help { color: #ff8d8d; }
+        .error-msg { color: var(--red); font-size: 10px; margin-top: 4px; }
+
+        .offer-list { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; padding: 18px; }
+        .offer { padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: linear-gradient(180deg, rgba(31,31,46,.52), rgba(20,20,29,.42)); transition: border-color .18s ease, transform .18s ease; }
+        .offer:hover { border-color: rgba(113,50,245,.35); transform: translateY(-1px); }
+        .trader { display: flex; gap: 11px; align-items: center; }
+        .trader strong { font-size: 13px; }
+        .handle { font-size: 10px; color: var(--muted); margin-top: 3px; }
+        .rating { font-size: 10px; color: var(--yellow); margin-left: 6px; }
+        .offer-rate { font-size: 24px; font-weight: 800; letter-spacing: -.04em; margin: 16px 0 3px; }
+        .rate-unit { font-size: 11px; color: var(--muted); }
+        .offer-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 14px 0; }
+        .metric { padding: 9px; border-radius: 8px; background: rgba(255,255,255,.025); border: 1px solid var(--border); }
+        .metric small { display: block; font-size: 9px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+        .metric strong { display: block; font-size: 11px; margin-top: 5px; }
+        .offer-actions { display: flex; justify-content: space-between; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .primary { border: 1px solid rgba(113,50,245,.45); background: linear-gradient(135deg, var(--purple), var(--purple2)); color: #fff; padding: 10px 14px; border-radius: 8px; box-shadow: 0 0 22px rgba(113,50,245,.18); transition: filter .2s; font-size: 13px; }
+        .primary:hover { filter: brightness(1.08); }
+        .ghost { border: 1px solid var(--border); background: rgba(255,255,255,.03); color: #dbe2f0; padding: 9px 12px; border-radius: 8px; transition: background .15s; font-size: 12px; }
+        .ghost:hover { background: rgba(255,255,255,.07); }
+        .link-btn { border: 0; background: transparent; color: #b9a7ff; padding: 7px 0; font-size: 11px; transition: color .15s; }
+        .link-btn:hover { color: #d4c6ff; }
+
+        .arb-panel { padding: 20px; position: sticky; top: 90px; align-self: start; }
+        .arb-flow { display: grid; grid-template-columns: 1fr 42px 1fr; align-items: center; gap: 9px; margin: 18px 0; }
+        .side-box { padding: 14px; border: 1px solid var(--border); background: rgba(255,255,255,.025); border-radius: var(--radius-sm); }
+        .side-label { font-size: 9px; letter-spacing: .15em; color: var(--muted); text-transform: uppercase; }
+        .side-rate { font-size: 20px; font-weight: 800; margin-top: 8px; }
+        .side-name { font-size: 11px; margin-top: 5px; }
+        .arrow { color: #9279ff; text-align: center; font-size: 20px; }
+        .calc { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 14px; background: rgba(255,255,255,.02); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; }
+        .calc-row { display: flex; justify-content: space-between; padding: 7px 0; font-size: 11px; color: var(--muted); }
+        .calc-row strong { color: #fff; }
+        .calc-row.net { margin-top: 4px; padding-top: 12px; border-top: 1px dashed var(--border); font-size: 13px; }
+        .calc-row.net strong { color: var(--cyan); font-size: 17px; }
+        .arb-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+        .table-wrap { overflow: auto; padding: 0 4px 4px 4px; }
+        .market-table { width: 100%; border-collapse: collapse; min-width: 1020px; }
+        .market-table th { font-size: 9px; letter-spacing: .14em; color: #7d8796; text-align: left; padding: 13px 18px; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+        .market-table td { padding: 13px 18px; border-bottom: 1px solid rgba(255,255,255,.045); font-size: 12px; }
+        .market-table tr:hover td { background: rgba(255,255,255,.02); }
+        .profit { color: #62f1b0; }
+        .danger { color: var(--red); }
+        .bar { height: 5px; width: 86px; background: rgba(255,255,255,.05); border-radius: 99px; overflow: hidden; }
+        .bar span { height: 100%; display: block; background: linear-gradient(90deg, var(--purple), var(--cyan)); border-radius: 99px; transition: width .4s ease; }
+
+        .profile-box { display: flex; gap: 14px; align-items: flex-start; background: rgba(255,255,255,.02); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; }
+        .bio { font-size: 11px; color: #bbc4d0; line-height: 1.5; margin-top: 8px; }
+        .stats-line { display: flex; gap: 12px; flex-wrap: wrap; font-size: 10px; color: var(--muted); margin-top: 8px; }
+        .profile-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .chip { font-size: 9px; padding: 4px 7px; border: 1px solid var(--border); border-radius: 999px; color: #b6bfcc; }
+
+        .feed { height: 340px; background: #0a0a0f; border: 1px solid #151515; border-radius: var(--radius-sm); padding: 12px; overflow: auto; font-family: var(--mono); font-size: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .feed-entry { background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: 10px 12px; display: flex; align-items: flex-start; gap: 10px; transition: background .15s; }
+        .feed-entry:hover { background: rgba(255,255,255,.04); }
+        .feed-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+        .feed-dot.info { background: #4da6ff; box-shadow: 0 0 8px rgba(77,166,255,.5); }
+        .feed-dot.success { background: #00ff41; box-shadow: 0 0 8px rgba(0,255,65,.5); }
+        .feed-dot.warn { background: #ffc857; box-shadow: 0 0 8px rgba(255,200,87,.5); }
+        .feed-content { flex: 1; min-width: 0; }
+        .feed-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .feed-time { color: #6b7280; font-size: 9px; }
+        .feed-tag { font-size: 9px; letter-spacing: .1em; color: #9aa7b8; background: rgba(255,255,255,.05); padding: 2px 6px; border-radius: 4px; }
+        .feed-message { color: #cbd5e1; font-size: 11px; line-height: 1.4; word-break: break-word; }
+        .feed-message.warn { color: #ffd166; }
+        .feed-message.info { color: #86d4ff; }
+        @keyframes fade-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+        .chat-list { display: flex; flex-direction: column; gap: 10px; padding: 10px 14px 16px; }
+        .chat-row { display: flex; gap: 10px; align-items: center; padding: 10px; border: 1px solid transparent; border-radius: 9px; width: 100%; background: transparent; color: inherit; text-align: left; transition: background .15s, border-color .15s; }
+        .chat-row:hover { background: rgba(255,255,255,.03); border-color: var(--border); }
+        .chat-preview { min-width: 0; flex: 1; }
+        .chat-preview strong { font-size: 11px; }
+        .chat-preview div { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dot-count { font-size: 9px; padding: 4px 6px; border-radius: 999px; background: rgba(0,212,255,.12); color: #7deaff; }
+
+        .order-list { padding: 18px; display: grid; gap: 12px; }
+        .order-item { background: rgba(255,255,255,.02); }
+
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 20px 28px;
+            text-align: center;
+            background: rgba(10,10,15,.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-top: 40px;
+        }
+        .footer-badges {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+        .footer-badges span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .footer-bottom {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.68); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: grid; place-items: center; z-index: 100; padding: 18px; }
+        .modal { width: min(720px, 100%); max-height: 90vh; overflow: auto; background: #12121b; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 30px 90px rgba(0,0,0,.65); animation: modal-in .25s ease; }
+        @keyframes modal-in { from { opacity: 0; transform: scale(.96) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid var(--border); gap: 12px; }
+        .modal-head h2 { font-size: 18px; letter-spacing: -.03em; margin: 0; }
+        .modal-body { padding: 18px; }
+        .close { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,.03); color: #cdd5e0; font-size: 18px; display: grid; place-items: center; flex-shrink: 0; transition: background .15s; }
+        .close:hover { background: rgba(255,255,255,.08); }
+
+        .warning-banner { background: rgba(255,200,87,.08); border: 1px solid rgba(255,200,87,.3); color: #ffd166; padding: 10px 14px; border-radius: 8px; font-size: 11px; margin-bottom: 14px; line-height: 1.5; }
+
+        .field { margin-top: 14px; }
+        .field:first-child { margin-top: 0; }
+        .field label { display: block; font-size: 9px; letter-spacing: .14em; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
+        .field input, .field select { width: 100%; background: #0c0d13; border: 1px solid var(--border); color: #fff; padding: 11px; border-radius: 8px; outline: none; font-size: 13px; }
+        .field input:focus, .field select:focus { border-color: rgba(113,50,245,.65); }
+        .big-number { font-size: 28px; font-weight: 800; letter-spacing: -.04em; }
+        .address { padding: 12px; border: 1px dashed rgba(0,212,255,.22); background: rgba(0,212,255,.03); border-radius: 9px; font-family: var(--mono); font-size: 11px; word-break: break-all; }
+        .copy-btn { border: 1px solid var(--border); background: rgba(255,255,255,.04); color: #d9e0eb; padding: 8px 10px; border-radius: 7px; font-size: 10px; transition: background .15s; white-space: nowrap; }
+        .copy-btn:hover { background: rgba(255,255,255,.08); }
+        .timer { font-family: var(--mono); font-size: 30px; color: #fff; text-align: center; padding: 14px; background: #0a0a0f; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+        .status-track { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin: 14px 0; }
+        .track-step { padding: 9px; border: 1px solid var(--border); border-radius: 8px; text-align: center; font-size: 9px; color: #7e8795; transition: border-color .2s, color .2s, background .2s; }
+        .track-step.active { border-color: rgba(0,212,255,.28); color: #8eeeff; background: rgba(0,212,255,.04); }
+        .wallet-assignment { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+
+        .message-list { height: 320px; overflow: auto; display: flex; flex-direction: column; gap: 9px; padding: 4px; }
+        .bubble { max-width: 78%; padding: 10px 11px; border-radius: 10px; font-size: 11px; line-height: 1.45; word-break: break-word; }
+        .bubble.me { margin-left: auto; background: linear-gradient(135deg, rgba(113,50,245,.5), rgba(91,30,207,.35)); border: 1px solid rgba(113,50,245,.32); }
+        .bubble.them { background: rgba(255,255,255,.045); border: 1px solid var(--border); }
+        .chat-compose { display: flex; gap: 8px; margin-top: 10px; }
+        .chat-compose input { flex: 1; background: #0c0d13; border: 1px solid var(--border); color: #fff; padding: 11px; border-radius: 8px; outline: none; font-size: 12px; }
+        .chat-compose input:focus { border-color: rgba(113,50,245,.65); }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,.045);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            max-width: 80%;
+            align-self: flex-start;
+        }
+        .typing-indicator .avatar { width: 24px; height: 24px; }
+        .typing-indicator .dots {
+            display: flex;
+            gap: 4px;
+        }
+        .typing-indicator .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--muted);
+            animation: typing-bounce 1.2s infinite ease-in-out;
+        }
+        .typing-indicator .dot:nth-child(2) { animation-delay: .2s; }
+        .typing-indicator .dot:nth-child(3) { animation-delay: .4s; }
+        @keyframes typing-bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+
+        .trust-strip { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.022); border-radius: var(--radius-sm); color: #9ba7b8; font-size: 10px; }
+        .trust-strip .trust-item { display: flex; align-items: center; gap: 6px; }
+        .trust-check { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 10px rgba(74,222,128,.2); }
+
+        #toast { position: fixed; right: 18px; bottom: 18px; z-index: 200; min-width: 260px; max-width: 420px; padding: 12px 14px; border: 1px solid var(--border); background: rgba(15,15,22,.96); border-radius: var(--radius-sm); box-shadow: var(--shadow); transform: translateY(20px); opacity: 0; pointer-events: none; transition: transform .25s ease, opacity .25s ease; color: #fff; font-size: 11px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        #toast.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        @media (max-width:1100px) {
+            .nav { display: none; }
+            .brand { min-width: auto; }
+            .span8, .span7, .span5 { grid-column: span 12; }
+            .span4, .span3 { grid-column: span 6; }
+            .offer-list { grid-template-columns: 1fr; }
+            .arb-panel { position: static; }
+        }
+        @media (max-width:700px) {
+            .shell { padding: 16px; }
+            .topbar { height: 68px; padding: 0 16px; gap: 14px; }
+            .brand-copy strong { font-size: 14px; }
+            .version { display: none; }
+            .wallet-btn { padding: 10px 11px; font-size: 12px; }
+            .wallet-btn span:last-child { display: none; }
+            .hero { padding-top: 14px; }
+            .hero-copy { padding: 20px 0 8px; }
+            .hero h1 { font-size: 42px; }
+            .hero p { font-size: 13px; }
+            .section-head { padding: 16px; }
+            .section-head h2 { font-size: 17px; }
+            .filterbar { padding: 12px 16px; }
+            .search { min-width: 0; flex: 1; }
+            .amount-filter { flex: 1; min-width: 180px; }
+            .amount-input { flex: 1; width: auto; }
+            .offer-list { padding: 14px; }
+            .offer-rate { font-size: 22px; }
+            .offer-metrics { grid-template-columns: 1fr 1fr; }
+            .market-table { min-width: 920px; }
+            .card, .offer { border-radius: var(--radius-sm); }
+            .span4, .span3, .span6, .span2 { grid-column: span 12; }
+            .stats .span3 { grid-column: span 6; }
+            .modal-backdrop { padding: 10px; }
+            .modal { max-height: 94vh; border-radius: var(--radius-sm); }
+            .modal-head { padding: 14px; }
+            .modal-body { padding: 14px; }
+            .form-row { grid-template-columns: 1fr; }
+            .status-track { grid-template-columns: 1fr 1fr; }
+            .arb-flow { grid-template-columns: 1fr; }
+            .arb-flow .arrow { transform: rotate(90deg); }
+            .timer { font-size: 27px; }
+            .chat-compose .primary { padding-inline: 12px; }
+            .wallet-assignment { grid-template-columns: 1fr; }
+            .profile-box { flex-direction: column; }
+            .calc-row { font-size: 10px; flex-wrap: wrap; gap: 4px; }
+        }
+        @media (max-width:480px) {
+            .stats .span3 { grid-column: span 12; }
+            .offer-metrics { grid-template-columns: 1fr; }
+            .offer-actions { flex-direction: column; align-items: stretch; }
+            .offer-actions .primary { width: 100%; justify-content: center; }
+            .filterbar .seg { width: 100%; }
+            .filterbar .seg button { flex: 1; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar" role="banner">
+        <a class="brand" href="#dashboard" aria-label="NEXUS Arbitrage home">
+            <svg class="brand-mark-svg" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                    <linearGradient id="brandGrad" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#9a73ff"/>
+                        <stop offset="1" stop-color="#00d4ff"/>
+                    </linearGradient>
+                    <filter id="brandGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="1.2" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <g filter="url(#brandGlow)">
+                    <circle cx="13" cy="13" r="3.5" fill="url(#brandGrad)"/>
+                    <circle cx="6" cy="6" r="2" fill="#9a73ff"/>
+                    <circle cx="20" cy="6" r="2" fill="#9a73ff"/>
+                    <circle cx="6" cy="20" r="2" fill="#00d4ff"/>
+                    <circle cx="20" cy="20" r="2" fill="#00d4ff"/>
+                    <line x1="13" y1="13" x2="6" y2="6" stroke="url(#brandGrad)" stroke-width="1.2" stroke-linecap="round"/>
+                    <line x1="13" y1="13" x2="20" y2="6" stroke="url(#brandGrad)" stroke-width="1.2" stroke-linecap="round"/>
+                    <line x1="13" y1="13" x2="6" y2="20" stroke="url(#brandGrad)" stroke-width="1.2" stroke-linecap="round"/>
+                    <line x1="13" y1="13" x2="20" y2="20" stroke="url(#brandGrad)" stroke-width="1.2" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <span class="brand-copy"><strong>NEXUS</strong><small>ARBITRAGE</small></span>
+            <span class="version">v3.1.0</span>
+        </a>
+        <nav class="nav" role="navigation" aria-label="Main navigation">
+            <a href="#dashboard" class="active" data-section="dashboard">Dashboard</a>
+            <a href="#market" data-section="market">P2P Market</a>
+            <a href="#arbitrage" data-section="arbitrage">Arbitrage</a>
+            <a href="#orders" data-section="orders">Orders</a>
+            <a href="#activity" data-section="activity">Activity</a>
+        </nav>
+        <button class="wallet-btn" id="walletBtn" aria-label="Connect wallet">
+            <span class="status-dot online" id="walletDot"></span>
+            <span id="walletText">Connect Wallet</span>
+        </button>
+    </header>
+
+    <main class="shell" id="dashboard" role="main">
+        <!-- Hero -->
+        <section class="hero grid12" aria-label="Dashboard overview">
+            <div class="hero-copy span8">
+                <div class="eyebrow"><span class="live-pulse" aria-hidden="true"></span> NEURA AI · P2P ARBITRAGE ENGINE ONLINE</div>
+                <h1>Find the spread.<br><em>Trade the difference manually.</em></h1>
+                <p>Discover profitable spreads across a premium P2P network. Verify traders with ratings and presence, chat in real time, and settle timed orders — all from one terminal.</p>
+            </div>
+            <div class="card core-card span4">
+                <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+                    <strong class="core-title">NEURA CORE</strong>
+                    <span class="core-status">● READY</span>
+                </div>
+                <div style="display:flex;gap:20px;margin-top:16px;">
+                    <div>
+                        <div class="micro">OFFERS SCANNED</div>
+                        <strong style="font-size:24px" id="scanRate">800</strong>
+                    </div>
+                    <div>
+                        <div class="micro">BEST NET ROI</div>
+                        <strong class="cyan" style="font-size:24px" id="bestROI">2.18%</strong>
+                    </div>
+                </div>
+                <div class="progress" role="progressbar" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100">
+                    <span id="scanProgress" style="width:78%"></span>
+                </div>
+                <div class="micro">P2P route graph synchronized · manual execution mode</div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="grid12 stats" aria-label="Key metrics">
+            <article class="card span3">
+                <div class="stat-label">P2P VOLUME 24H</div>
+                <div class="stat-value">$842,610</div>
+                <div class="sub positive">+8.42% today</div>
+            </article>
+            <article class="card span3">
+                <div class="stat-label">ARBITRAGE OPPORTUNITIES</div>
+                <div class="stat-value cyan" id="arbCount">24</div>
+                <div class="sub">7 currently actionable</div>
+            </article>
+            <article class="card span3">
+                <div class="stat-label">AVG. NET SPREAD</div>
+                <div class="stat-value">1.14%</div>
+                <div class="sub">After estimated costs</div>
+            </article>
+            <article class="card span3">
+                <div class="stat-label">ACTIVE ORDERS</div>
+                <div class="stat-value" id="activeOrders">3</div>
+                <div class="sub">Escrow timer active</div>
+            </article>
+        </section>
+
+        <!-- P2P Market -->
+        <section class="card span12" id="market" style="margin-top:20px" aria-label="P2P Marketplace">
+            <div class="section-head">
+                <div>
+                    <div class="kicker">P2P MARKETPLACE</div>
+                    <h2>Buy &amp; Sell Offers</h2>
+                </div>
+                <div class="panel-tools">
+                    <span class="tag live">● LIVE</span>
+                    <button class="ghost" id="refreshBtn" aria-label="Refresh rates">Refresh rates</button>
+                </div>
+            </div>
+            <div class="filterbar" role="search" aria-label="Filter offers">
+                <div class="seg" id="sideSeg" role="group" aria-label="Trade side">
+                    <button class="active" data-side="buy" aria-pressed="true">Buy</button>
+                    <button data-side="sell" aria-pressed="false">Sell</button>
+                </div>
+                <select class="select" id="assetFilter" aria-label="Filter by asset"></select>
+                <select class="select" id="networkFilter" aria-label="Filter by network"></select>
+                <div class="amount-filter" id="amountFilterWrap">
+                    <label for="amountFilter">TRADE AMOUNT (USDC)</label>
+                    <input class="amount-input" id="amountFilter" type="number" min="100" step="1" inputmode="decimal" placeholder="Enter amount" value="100" aria-label="Trade amount">
+                    <span class="amount-help" id="amountHelp">Min: 100</span>
+                </div>
+                <div class="error-msg hidden" id="filterError">Minimum amount is 100</div>
+                <input class="search" id="searchInput" placeholder="Search trader or asset…" aria-label="Search offers">
+            </div>
+            <div class="offer-list" id="offerList" role="list"></div>
+            <div style="padding:0 18px 18px;">
+                <button class="ghost" id="loadMoreBtn">Load More</button>
+            </div>
+        </section>
+
+        <!-- Arbitrage -->
+        <section class="grid12" id="arbitrage" style="margin-top:20px" aria-label="Arbitrage opportunities">
+            <article class="card span7">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">NEURA INTELLIGENCE</div>
+                        <h2>Live Arbitrage Opportunities</h2>
+                    </div>
+                    <span class="tag">NET AFTER COSTS</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="market-table" aria-label="Arbitrage opportunities table">
+                        <thead>
+                            <tr>
+                                <th>PAIR</th>
+                                <th>BUY FROM</th>
+                                <th>SELL TO</th>
+                                <th>BUY RATE</th>
+                                <th>SELL RATE</th>
+                                <th>NET SPREAD</th>
+                                <th>LIQ.</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="arbRows"></tbody>
+                    </table>
+                </div>
+            </article>
+            <article class="card span5 arb-panel">
+                <div class="kicker">SELECTED ROUTE</div>
+                <h2>Arbitrage Profit Calculator</h2>
+                <p class="micro" style="line-height:1.6">Adjust amount and fees to calculate net profit. Use "Max Profit" to find the optimal amount.</p>
+                <div class="arb-flow">
+                    <div class="side-box">
+                        <div class="side-label">BUY FROM</div>
+                        <div class="side-rate" id="calcBuyRate">0.997</div>
+                        <div class="side-name" id="calcBuyName">Alex Trades ✓</div>
+                    </div>
+                    <div class="arrow" aria-hidden="true">→</div>
+                    <div class="side-box">
+                        <div class="side-label">SELL TO</div>
+                        <div class="side-rate" id="calcSellRate">1.008</div>
+                        <div class="side-name" id="calcSellName">David OTC ✓</div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="capitalInput">CAPITAL (USDC)</label>
+                    <input id="capitalInput" type="number" value="1000" min="100" step="1" aria-label="Capital amount in USDC">
+                    <div class="micro" style="margin-top:6px;display:flex;align-items:center;gap:6px;">
+                        <span class="tag" style="background:rgba(113,50,245,.12);color:#bfa8ff;border-color:rgba(113,50,245,.25);">MIN: 100</span>
+                        <span>You can enter any higher amount</span>
+                    </div>
+                    <div class="error-msg hidden" id="capitalError">Minimum amount is 100</div>
+                </div>
+                <div class="grid12" style="margin-top:10px;">
+                    <div class="span4">
+                        <div class="field">
+                            <label for="feePct">TRADING FEE %</label>
+                            <input id="feePct" type="number" value="0.10" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div class="field">
+                            <label for="networkFee">NETWORK FEE</label>
+                            <input id="networkFee" type="number" value="0.50" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div class="field">
+                            <label for="slippagePct">SLIPPAGE %</label>
+                            <input id="slippagePct" type="number" value="0.05" min="0" step="0.01">
+                        </div>
+                    </div>
+                </div>
+                <div class="calc">
+                    <div class="calc-row"><span>Gross return</span><strong id="grossReturn">1,008.00 USDC</strong></div>
+                    <div class="calc-row"><span>Trading fee</span><strong id="tradingFee">−1.01 USDC</strong></div>
+                    <div class="calc-row"><span>Network fee</span><strong id="networkFeeDisplay">−0.50 USDC</strong></div>
+                    <div class="calc-row"><span>Slippage</span><strong id="slippageDisplay">−0.50 USDC</strong></div>
+                    <div class="calc-row net"><span>NET PROFIT</span><strong id="netProfit">+6.84 USDC</strong></div>
+                    <div class="calc-row"><span>NET ROI</span><strong class="cyan" id="netROI">0.68%</strong></div>
+                </div>
+                <div class="arb-actions">
+                    <button class="primary" id="maxProfitBtn">MAX PROFIT</button>
+                    <button class="ghost" id="viewRouteBtn">View details</button>
+                </div>
+            </article>
+        </section>
+
+        <!-- P2P Order Flow (no community chat) -->
+        <section class="grid12" id="orders" style="margin-top:20px" aria-label="Orders">
+            <article class="card span12">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">P2P ORDER FLOW</div>
+                        <h2>Active Orders</h2>
+                    </div>
+                    <span class="tag">TIMED</span>
+                </div>
+                <div class="order-list" id="orderList" role="list"></div>
+            </article>
+        </section>
+
+        <!-- Activity Feed & Featured Profile -->
+        <section class="grid12" id="activity" style="margin-top:20px" aria-label="Activity feed and trader profile">
+            <article class="card span7">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">EXECUTION STREAM</div>
+                        <h2>Live Transaction Feed</h2>
+                    </div>
+                    <button class="ghost" id="clearFeedBtn">Clear</button>
+                </div>
+                <div class="feed" id="feed" role="log" aria-live="polite"></div>
+            </article>
+            <article class="card span5">
+                <div class="section-head">
+                    <div>
+                        <div class="kicker">TRADER PROFILE</div>
+                        <h2>Featured Merchant</h2>
+                    </div>
+                </div>
+                <div class="pad" id="featuredProfile"></div>
+            </article>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-badges">
+            <span>🔒 Secure Transactions</span>
+            <span>⚡ Fast Settlement</span>
+            <span>🛡️ Account Protection</span>
+        </div>
+        <div class="footer-bottom">
+            © 2026 NEXUS ARBITRAGE · All rights reserved.
+        </div>
+    </footer>
+
+    <div class="modal-backdrop hidden" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal" id="modal"></div>
+    </div>
+
+    <div id="toast" role="alert" aria-live="polite"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            /* ── constants ── */
+            const STORAGE_KEY = 'nexus_p2p_escrow_v1';
+            const VIEWED_OFFERS_KEY = 'nexus_viewed_offers';
+            const ASSETS = [
+                { code: 'USDT', name: 'Tether', icon: '₮', baseRate: 1.0, quote: 'USDC' },
+                { code: 'USDC', name: 'USD Coin', icon: '◉', baseRate: 1.0, quote: 'USDT' },
+                { code: 'SOL', name: 'Solana', icon: '◎', baseRate: 180, quote: 'USDC' },
+                { code: 'BTC', name: 'Bitcoin', icon: '₿', baseRate: 113000, quote: 'USDT' },
+                { code: 'ETH', name: 'Ethereum', icon: 'Ξ', baseRate: 4200, quote: 'USDT' },
+                { code: 'WBTC', name: 'Wrapped Bitcoin', icon: '₿', baseRate: 112500, quote: 'USDT' },
+                { code: 'JUP', name: 'Jupiter', icon: 'J', baseRate: 1.2, quote: 'USDC' },
+                { code: 'BONK', name: 'Bonk', icon: 'B', baseRate: 0.00002, quote: 'USDC' }
+            ];
+            const NETWORKS = ['Solana', 'Ethereum', 'Base'];
+
+            /* ── avatar providers ── */
+            function getAvatarUrl(traderId) {
+                const idNum = parseInt(traderId.replace(/\D/g, ''), 10) || 0;
+                if (idNum % 2 === 0) {
+                    const gender = idNum % 4 < 2 ? 'men' : 'women';
+                    const portraitId = Math.floor(idNum / 4) % 100;
+                    return `https://randomuser.me/api/portraits/${gender}/${portraitId}.jpg`;
+                } else {
+                    return `https://api.dicebear.com/10.x/personas/svg?seed=NEXUS_${traderId}`;
+                }
+            }
+
+            /* ── generate unique traders ── */
+            const firstNames = [...Array(100)].map((_, i) => String.fromCharCode(65 + (i % 26)) + (i % 26 === 0 ? '' : String.fromCharCode(97 + (i % 26))));
+            const lastNames = ['Trades','P2P','Crypto','Exchange','OTC','Labs','Capital','Ventures','Finance','Digital','Global','Prime','Elite','Max','Pro','Hub','Network','Solutions','Trade','Assets','Markets','Fund','Group','Partners','Holdings','Invest','Inc.','LLC','Co.','Trading','Advisors','Group','Partners','Holdings','Invest','Inc.','LLC','Co.','Systems','Technologies','Labs','Works','Solutions','Hub','Exchange','Market','Capital','Wealth','Bridge','Core'];
+            const handlePatterns = [
+                (name) => `@${name.toLowerCase().replace(/\s/g, '_')}`,
+                (name) => `@${name.toLowerCase().replace(/\s/g, '')}${Math.floor(Math.random()*99)}`,
+                (name) => `@${name.split(' ')[0].toLowerCase()}_${name.split(' ')[1]?.toLowerCase() || 'trade'}`,
+                (name) => `@${name.split(' ')[0].toLowerCase()}_p2p`,
+                (name) => `@${name.split(' ')[0].toLowerCase()}_otc`,
+                (name) => `@${name.split(' ')[0].toLowerCase()}_${name.split(' ')[1]?.toLowerCase() || 'crypto'}_${Math.floor(Math.random()*99)}`,
+                (name) => `@${name.split(' ')[0].toLowerCase()}_exchange`,
+                (name) => `@${name.split(' ')[0].toLowerCase()}_finance`,
+                (name) => `@${name.split(' ')[0].toLowerCase()}_trade`,
+                (name) => `@${name.split(' ')[0].toLowerCase()}_capital`
+            ];
+            const bioTemplates = {
+                formal: [
+                    'Professional {asset} trader. {completion}% completion rate. {orders} trades completed.',
+                    'Dedicated to secure and efficient settlements. {asset} specialist.',
+                    '{asset} liquidity provider. Verified track record of {orders} successful trades.',
+                    'Experienced P2P merchant. Focused on {asset} and {quote} pairs.',
+                    'Institutional-grade OTC desk. Minimum trade {minQuote} {quote}.',
+                    'Fast and reliable {asset} trading. {completion}% positive feedback.',
+                    'Your trusted partner for large-volume {asset} transactions.',
+                    '{asset} arbitrage specialist. Average release time {release}.',
+                    'Premium {asset} liquidity. 24/7 support. {orders} orders fulfilled.',
+                    'Secure escrow for {asset} trades. Verified merchant.'
+                ],
+                casual: [
+                    'Hey! I trade {asset} mostly. Quick releases and fair rates 👍',
+                    'Yo! {asset} guy here. Let’s make a deal 🤝',
+                    'Crypto enthusiast. {asset} and {quote} are my jam.',
+                    'Fast trades, no drama. {asset} specialist 😎',
+                    '{asset} trader. I’m online most of the time. DM me!',
+                    'I love {asset}. Let’s trade! Rates always fair.',
+                    'Just a trader trying to make some profit. {asset} pairs only.',
+                    'Hit me up for {asset} deals. I’m quick and reliable ✌️',
+                    '{asset} liquidity provider. No minimum, just chat first.',
+                    'Friendly {asset} trader. I respond fast, sometimes with memes.'
+                ],
+                terse: [
+                    '{asset} only. Fast release.',
+                    'Trading {asset}. Min {minQuote} {quote}.',
+                    '{asset} specialist. {completion}% completion.',
+                    'Quick {asset} trades. {orders} done.',
+                    '{asset} liquidity. Serious buyers only.',
+                    'Fast {asset} settlements. No KYC.',
+                    '{asset} merchant. {release} release.',
+                    '{asset} pairs. Contact for rates.',
+                    'Trusted {asset} trader. {completion}% positive.',
+                    '{asset} available. {orders} trades completed.'
+                ],
+                friendly: [
+                    'Hi there! 😊 I specialize in {asset} and love helping new traders.',
+                    'Welcome! I’m here to make your {asset} trading smooth and safe.',
+                    'Hello! 👋 I’m a {asset} trader with {orders} happy clients.',
+                    'Glad you found me! I offer {asset} trades with quick release and great rates.',
+                    'Hey! I’m your go-to for {asset}. Let’s trade!',
+                    'Hi! I’m a verified {asset} merchant. Feel free to ask anything.',
+                    'Welcome to my profile! I’m here to provide secure {asset} trades.',
+                    'Hello! 😊 I trade {asset} with a smile. Fast and friendly.',
+                    'Hey there! I’m all about {asset} and making trading easy.',
+                    'Hi! I’ve completed {orders} {asset} trades. Let’s make yours next!'
+                ],
+                technical: [
+                    '{asset} liquidity pool operator. Escrow via smart contract. {completion}% success rate.',
+                    'Algorithmic {asset} market maker. Min spread {edgePct}%.',
+                    '{asset} OTC desk. Multi-sig escrow. {orders} trades settled.',
+                    'P2P {asset} liquidity provider. On-chain settlement. {release} average.',
+                    '{asset} arbitrage specialist. Deep order book. {minQuote} {quote} minimum.',
+                    'Institutional {asset} trading. {orders} completed. API available.',
+                    '{asset} exchange liquidity. {completion}% completion. Secure multi-party escrow.',
+                    '{asset} market analyst. {edgePct}% average spread. {release} release.',
+                    'High-frequency {asset} trader. {orders} trades. {completion}% positive.',
+                    '{asset} quant. {minQuote} {quote} minimum. {release} release.'
+                ],
+                slang: [
+                    '{asset} gang 😤 Fast release, no cap.',
+                    'Yo, {asset} king here 👑 {orders} trades deep.',
+                    'I flip {asset} like pancakes 🥞 Quick and clean.',
+                    '{asset} wizard 🧙‍♂️ {completion}% completion. Let’s go!',
+                    'Catch me on {asset} pairs. {release} release. Lit 🔥',
+                    '{asset} hustler 💪 {orders} done. Serious only.',
+                    'No cap, best {asset} rates in the game 🎯',
+                    '{asset} boss 🚀 {completion}% positive. DM for trades.',
+                    'I move {asset} fast. {release} avg release. No games.',
+                    '{asset} og since day 1. {orders} trades. Trust.'
+                ]
+            };
+
+            const usedNames = new Set();
+            const usedHandles = new Set();
+            const TRADERS = {};
+            const traderIds = [];
+            for (let i = 0; i < 500; i++) {
+                const id = `trader${i}`;
+                traderIds.push(id);
+                let name;
+                do {
+                    const fn = firstNames[Math.floor(Math.random()*firstNames.length)];
+                    const ln = lastNames[Math.floor(Math.random()*lastNames.length)];
+                    name = `${fn} ${ln}`;
+                } while (usedNames.has(name));
+                usedNames.add(name);
+                const initials = name[0] + name[name.indexOf(' ')+1];
+                const rating = parseFloat((4.0 + Math.random()*1.0).toFixed(2));
+                const completion = parseFloat((85 + Math.random()*15).toFixed(1));
+                const orders = Math.floor(5 + Math.random()*5000);
+                const status = ['online','online','online','away','offline'][Math.floor(Math.random()*5)];
+                const release = Math.random() < 0.6 ? '< 2 min' : Math.random() < 0.8 ? '< 3 min' : '< 5 min';
+                const responseSpeeds = ['instant','fast','medium','slow'];
+                const languageStyles = ['formal','casual','terse','friendly','technical','slang'];
+                const persona = {
+                    responseSpeed: responseSpeeds[Math.floor(Math.random()*responseSpeeds.length)],
+                    languageStyle: languageStyles[Math.floor(Math.random()*languageStyles.length)],
+                    emojiUse: Math.random() < 0.3,
+                    negotiation: Math.random() < 0.5 ? 'flexible' : 'strict',
+                    patience: Math.random() < 0.5 ? 'fast' : 'normal',
+                    riskTolerance: Math.random() < 0.3 ? 'high' : Math.random() < 0.7 ? 'medium' : 'low'
+                };
+                let handle;
+                do {
+                    handle = handlePatterns[Math.floor(Math.random()*handlePatterns.length)](name);
+                } while (usedHandles.has(handle));
+                usedHandles.add(handle);
+                const asset = ASSETS[Math.floor(Math.random()*ASSETS.length)].code;
+                const quote = ASSETS.find(a => a.code === asset)?.quote || 'USDC';
+                const edgePct = (Math.random()*1.5).toFixed(2);
+                const template = bioTemplates[persona.languageStyle] || bioTemplates.formal;
+                const bio = template[Math.floor(Math.random()*template.length)]
+                    .replace('{asset}', asset)
+                    .replace('{quote}', quote)
+                    .replace('{completion}', completion.toFixed(1))
+                    .replace('{orders}', orders)
+                    .replace('{release}', release)
+                    .replace('{minQuote}', '100')
+                    .replace('{edgePct}', edgePct);
+                TRADERS[id] = {
+                    id, name, handle, initials,
+                    verified: Math.random() < 0.4,
+                    rating, completion, orders, bio, status, release,
+                    avatar: getAvatarUrl(id),
+                    thumbsUp: Math.floor(Math.random() * 200) + 10,
+                    thumbsDown: Math.floor(Math.random() * 20),
+                    persona,
+                    usedMessages: []
+                };
+            }
+
+            const WALLETS = {};
+            for (const id of traderIds) {
+                const t = TRADERS[id];
+                WALLETS[id] = `${t.initials.toLowerCase()}${Math.floor(Math.random()*1000)}...${id.slice(0,2).toUpperCase()}${Math.floor(Math.random()*99)}`;
+            }
+
+            /* ── generate offers ── */
+            let OFFERS = [];
+            function generateOffers() {
+                const offers = [];
+                let id = 1;
+                for (const asset of ASSETS) {
+                    const baseRate = asset.baseRate;
+                    const quote = asset.quote;
+                    for (let i = 0; i < 50; i++) {
+                        const traderId = traderIds[Math.floor(Math.random()*traderIds.length)];
+                        const rate = baseRate * (1 - (Math.random()*0.01));
+                        const available = Math.floor(100 + Math.random()*10000);
+                        offers.push({ id: id++, side: 'sell', asset: asset.code, quote, network: 'Solana', trader: traderId, rate, available, minQuote: 100, maxQuote: Math.floor(100 + Math.random()*9900), payment: 'Wallet transfer' });
+                    }
+                    for (let i = 0; i < 50; i++) {
+                        const traderId = traderIds[Math.floor(Math.random()*traderIds.length)];
+                        const rate = baseRate * (1 + (Math.random()*0.01));
+                        const available = Math.floor(100 + Math.random()*10000);
+                        offers.push({ id: id++, side: 'buy', asset: asset.code, quote, network: 'Solana', trader: traderId, rate, available, minQuote: 100, maxQuote: Math.floor(100 + Math.random()*9900), payment: 'Wallet transfer' });
+                    }
+                }
+                return offers;
+            }
+            OFFERS = generateOffers();
+
+            /* ── state ── */
+            const state = {
+                side: 'buy', selectedAsset: 'ALL', selectedNetwork: 'ALL', search: '', amountFilter: 100,
+                selectedArb: 0, walletConnected: false, chatTrader: null, modalTimer: null,
+                feedInterval: null, presenceInterval: null, countdownInterval: null, arbInterval: null,
+                feedTimeouts: [], localEscrow: { orders: {}, locked: {} },
+                displayedOffers: [],
+                remainingOffers: []
+            };
+
+            /* ── DOM refs ── */
+            const $ = (s) => document.querySelector(s);
+            const $$ = (s) => document.querySelectorAll(s);
+            const el = (id) => document.getElementById(id);
+            const DOM = {
+                offerList: el('offerList'), arbRows: el('arbRows'), orderList: el('orderList'),
+                feed: el('feed'), featuredProfile: el('featuredProfile'), modal: el('modal'), modalBackdrop: el('modalBackdrop'),
+                toast: el('toast'), walletText: el('walletText'), walletDot: el('walletDot'), scanRate: el('scanRate'),
+                bestROI: el('bestROI'), arbCount: el('arbCount'), activeOrders: el('activeOrders'),
+                calcBuyRate: el('calcBuyRate'), calcSellRate: el('calcSellRate'), calcBuyName: el('calcBuyName'), calcSellName: el('calcSellName'),
+                buyCost: el('buyCost'), grossReturn: el('grossReturn'), costs: el('costs'), netProfit: el('netProfit'), netROI: el('netROI'),
+                capitalInput: el('capitalInput'), amountFilterInput: el('amountFilter'), amountHelp: el('amountHelp'),
+                searchInput: el('searchInput'), assetFilter: el('assetFilter'), networkFilter: el('networkFilter'), sideSeg: el('sideSeg'),
+                refreshBtn: el('refreshBtn'), viewRouteBtn: el('viewRouteBtn'), simulateBtn: el('simulateBtn'), clearFeedBtn: el('clearFeedBtn'),
+                walletBtn: el('walletBtn'), scanProgress: el('scanProgress'), filterError: el('filterError'), capitalError: el('capitalError'),
+                feePct: el('feePct'), networkFee: el('networkFee'), slippagePct: el('slippagePct'),
+                tradingFee: el('tradingFee'), networkFeeDisplay: el('networkFeeDisplay'), slippageDisplay: el('slippageDisplay'),
+                maxProfitBtn: el('maxProfitBtn'), loadMoreBtn: el('loadMoreBtn')
+            };
+
+            /* ── adaptive chunk size ── */
+            function getChunkSize() {
+                const width = window.innerWidth;
+                if (width > 1100) return 20;
+                if (width > 700) return 12;
+                return 8;
+            }
+
+            /* ── helpers ── */
+            const fmt = (n, d = 2) => new Intl.NumberFormat('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }).format(n);
+            const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+            function getTrader(id) { return TRADERS[id]; }
+            function getWallet(id) { return WALLETS[id] || '…'; }
+            function getOffer(id) { return OFFERS.find(o => o.id === id); }
+            function minAssetAmount(o) { return o.minQuote / Math.max(o.rate, 1e-12); }
+            function maxAssetAmount(o) { return Math.min(o.maxQuote / Math.max(o.rate, 1e-12), o.available); }
+            function offerLimitText(o) { return `${fmt(o.minQuote)}–${fmt(o.maxQuote)} ${o.quote}`; }
+            function nextOrderId() { return 'NX-' + String(10000 + Math.floor(Math.random() * 90000)); }
+            function presenceBadge(status) {
+                const labels = { online: 'Online', away: 'Away', offline: 'Offline' };
+                const reply = status === 'online' ? 'Fast reply' : status === 'away' ? 'Slow reply' : '';
+                return `<span class="presence-badge ${status}"><span class="status-dot ${status}"></span>${labels[status]||'Unknown'}${reply ? `<span class="reply-time">· ${reply}</span>` : ''}</span>`;
+            }
+            function avatarHtml(tid, cls = '') {
+                const t = getTrader(tid);
+                if (!t) return '';
+                return `<div class="avatar ${cls}"><img src="${t.avatar}" alt="${t.name} avatar" loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=7132f5&color=fff'"></div>`;
+            }
+            function thumbGroup(tid) {
+                const t = getTrader(tid);
+                if (!t) return '';
+                return `<span class="thumb-group">
+                    <button class="thumb-btn thumb-up" data-trader="${tid}">👍 ${t.thumbsUp}</button>
+                    <button class="thumb-btn thumb-down" data-trader="${tid}">👎 ${t.thumbsDown}</button>
+                </span>`;
+            }
+            function traderCard(tid) {
+                const t = getTrader(tid);
+                if (!t) return '';
+                return `<div class="trader">
+                    ${avatarHtml(tid)}
+                    <div>
+                        <div>
+                            <strong>${t.name}</strong>
+                            ${t.verified ? '<span class="verified">VERIFIED</span>' : ''}
+                            <span class="rating">★ ${t.rating.toFixed(2)}</span>
+                            ${thumbGroup(tid)}
+                        </div>
+                        <div class="handle">${t.handle}</div>
+                    </div>
+                </div>`;
+            }
+
+            /* ── escrow storage ── */
+            function loadEscrow() {
+                try {
+                    const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                    if (data && typeof data === 'object') { state.localEscrow = data; return; }
+                } catch (_) {}
+                state.localEscrow = { orders: {}, locked: {} };
+            }
+            function saveEscrow() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.localEscrow)); } catch (_) {} }
+            function expireEscrowOrders() {
+                let changed = false;
+                const now = Date.now();
+                for (const key of Object.keys(state.localEscrow.orders)) {
+                    const o = state.localEscrow.orders[key];
+                    if (o.status === 'escrow_locked' && now >= o.expiresAt) {
+                        o.status = 'cancelled'; o.cancelReason = 'expired';
+                        const locked = state.localEscrow.locked[o.offerId] || 0;
+                        state.localEscrow.locked[o.offerId] = Math.max(0, locked - o.amount);
+                        changed = true;
+                    }
+                }
+                if (changed) saveEscrow();
+            }
+            async function escrowCreate(offerId, amount) {
+                const o = getOffer(offerId);
+                if (!o) throw new Error('Offer no longer exists.');
+                const amt = Number(amount);
+                if (!Number.isFinite(amt) || amt <= 0) throw new Error('Amount must be a positive number.');
+                const quoteValue = amt * o.rate;
+                if (quoteValue < o.minQuote || quoteValue > o.maxQuote) throw new Error(`Minimum trade is ${fmt(o.minQuote)} ${o.quote}. Amount outside limits.`);
+                if (amt > o.available) throw new Error('Offer inventory insufficient.');
+                const locked = (state.localEscrow.locked[offerId] || 0) + amt;
+                if (locked > o.available) throw new Error('Offer inventory already reserved by another order.');
+                const id = nextOrderId();
+                const order = { id, offerId: Number(offerId), side: o.side === 'sell' ? 'buy' : 'sell', asset: o.asset, quote: o.quote, network: o.network, trader: o.trader, amount: amt, rate: o.rate, status: 'escrow_locked', createdAt: Date.now(), expiresAt: Date.now() + 15 * 60 * 1000 };
+                state.localEscrow.orders[id] = order;
+                state.localEscrow.locked[offerId] = locked;
+                saveEscrow();
+                return { ok: true, order };
+            }
+            async function escrowAction(orderId, action) {
+                const order = state.localEscrow.orders[orderId];
+                if (!order) throw new Error('Order not found.');
+                expireEscrowOrders();
+                if (order.status === 'escrow_locked' && Date.now() >= order.expiresAt) {
+                    order.status = 'cancelled'; order.cancelReason = 'expired';
+                    const locked = state.localEscrow.locked[order.offerId] || 0;
+                    state.localEscrow.locked[order.offerId] = Math.max(0, locked - order.amount);
+                    saveEscrow(); throw new Error('Order has expired.');
+                }
+                if (action === 'paid') {
+                    if (order.status !== 'escrow_locked') throw new Error('Order is no longer awaiting payment.');
+                    order.status = 'payment_marked'; order.paidAt = Date.now();
+                } else if (action === 'release') {
+                    if (order.status !== 'payment_marked') throw new Error('Payment must be marked before release.');
+                    order.status = 'completed'; order.releasedAt = Date.now();
+                    const locked = state.localEscrow.locked[order.offerId] || 0;
+                    state.localEscrow.locked[order.offerId] = Math.max(0, locked - order.amount);
+                } else if (action === 'cancel') {
+                    if (['completed','cancelled'].includes(order.status)) throw new Error('Order is already closed.');
+                    order.status = 'cancelled'; order.cancelledAt = Date.now();
+                    const locked = state.localEscrow.locked[order.offerId] || 0;
+                    state.localEscrow.locked[order.offerId] = Math.max(0, locked - order.amount);
+                } else throw new Error('Unsupported action.');
+                saveEscrow(); return { ok: true, order };
+            }
+
+            /* ── arbitrage logic ── */
+            function getArbOpportunities() {
+                const sells = OFFERS.filter(o => o.side === 'sell');
+                const buys = OFFERS.filter(o => o.side === 'buy');
+                const out = [];
+                for (const s of sells) {
+                    const b = buys.find(x => x.asset === s.asset && x.quote === s.quote && x.network === s.network);
+                    if (!b) continue;
+                    const costs = Math.max(0.45, Math.min(3.4, (s.rate + b.rate) * 0.0015));
+                    const edge = b.rate - s.rate;
+                    const base = s.asset === 'USDT' ? 1000 : s.asset === 'SOL' ? 1000/s.rate : s.asset === 'BTC' ? 0.01 : s.asset === 'ETH' ? 0.25 : 100;
+                    const net = edge*base - costs;
+                    const roi = (net / (s.rate*base)) * 100;
+                    if (roi <= 0) continue;
+                    const liq = Math.min(99, Math.round((Math.min(s.available,b.available)/Math.max(1,base))*100));
+                    out.push({ s, b, edgePct: (b.rate/s.rate - 1)*100, net, base, costs, liq, roi });
+                }
+                return out.sort((a,b) => b.roi - a.roi);
+            }
+
+            /* ── smart shuffle engine ── */
+            function getViewedOffers() {
+                try {
+                    const data = JSON.parse(localStorage.getItem(VIEWED_OFFERS_KEY));
+                    if (Array.isArray(data)) return new Set(data);
+                } catch (_) {}
+                return new Set();
+            }
+            function setViewedOffer(id) {
+                const viewed = getViewedOffers();
+                viewed.add(id);
+                localStorage.setItem(VIEWED_OFFERS_KEY, JSON.stringify([...viewed]));
+            }
+            function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+
+            function filterOffers() {
+                const { side, selectedAsset, selectedNetwork, amountFilter, search } = state;
+                const targetSide = side === 'buy' ? 'sell' : 'buy';
+                return OFFERS.filter(o => {
+                    if (o.side !== targetSide) return false;
+                    if (selectedAsset !== 'ALL' && o.asset !== selectedAsset) return false;
+                    if (selectedNetwork !== 'ALL' && o.network !== selectedNetwork) return false;
+                    if (o.minQuote > amountFilter || o.maxQuote < amountFilter) return false;
+                    const t = getTrader(o.trader);
+                    const query = search.toLowerCase().trim();
+                    if (query) {
+                        const nameMatch = t ? t.name.toLowerCase().includes(query) : false;
+                        const handleMatch = t ? t.handle.toLowerCase().includes(query) : false;
+                        const assetMatch = o.asset.toLowerCase().includes(query);
+                        if (!nameMatch && !handleMatch && !assetMatch) return false;
+                    }
+                    return true;
+                });
+            }
+
+            function getUnseenOffers() {
+                const filtered = filterOffers();
+                const viewed = getViewedOffers();
+                const unseen = filtered.filter(o => !viewed.has(o.id));
+                const seen = filtered.filter(o => viewed.has(o.id));
+                return [...shuffleArray(unseen), ...shuffleArray(seen)];
+            }
+
+            function renderOffers() {
+                const chunkSize = getChunkSize();
+                const offers = getUnseenOffers();
+                state.displayedOffers = offers.slice(0, chunkSize);
+                state.remainingOffers = offers.slice(chunkSize);
+                renderOfferCards(state.displayedOffers);
+                DOM.loadMoreBtn.hidden = state.remainingOffers.length === 0;
+            }
+
+            function renderOfferCards(offers) {
+                if (!offers.length) {
+                    DOM.offerList.innerHTML = `<div style="grid-column:1/-1;padding:30px;color:var(--muted);text-align:center;">No offers match your filters.</div>`;
+                    return;
+                }
+                DOM.offerList.innerHTML = offers.map(o => {
+                    const t = getTrader(o.trader);
+                    const action = o.side === 'sell' ? 'BUY' : 'SELL';
+                    const digits = o.asset === 'SOL' ? 2 : o.asset === 'BTC' ? 4 : o.asset === 'BONK' ? 8 : 2;
+                    const rateStr = o.rate >= 100 ? fmt(o.rate, 2) : o.rate.toFixed(4);
+                    const minAsset = minAssetAmount(o);
+                    const minDisplay = `${fmt(o.minQuote)} ${o.quote} (≈ ${fmt(minAsset, digits)} ${o.asset})`;
+                    return `<article class="offer" role="listitem">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                            ${traderCard(o.trader)}
+                            ${presenceBadge(t ? t.status : 'offline')}
+                        </div>
+                        <div class="offer-rate">${rateStr} <span class="rate-unit">${o.quote} / ${o.asset}</span></div>
+                        <div class="offer-metrics">
+                            <div class="metric"><small>AVAILABLE</small><strong>${fmt(o.available, digits)} ${o.asset}</strong></div>
+                            <div class="metric"><small>MIN TRADE</small><strong>${minDisplay}</strong></div>
+                            <div class="metric"><small>LIMITS</small><strong>${offerLimitText(o)}</strong></div>
+                        </div>
+                        <div class="offer-actions">
+                            <button class="link-btn profile-btn" data-trader="${o.trader}">View profile</button>
+                            <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                                <button class="ghost chat-btn" data-trader="${o.trader}">Chat</button>
+                                <button class="primary order-btn" data-id="${o.id}">${action} ${o.asset}</button>
+                            </div>
+                        </div>
+                    </article>`;
+                }).join('');
+
+                offers.forEach(o => setViewedOffer(o.id));
+
+                DOM.offerList.querySelectorAll('.profile-btn').forEach(b => b.onclick = (e) => { e.stopPropagation(); profileModal(b.dataset.trader); });
+                DOM.offerList.querySelectorAll('.chat-btn').forEach(b => b.onclick = (e) => { e.stopPropagation(); openChat(b.dataset.trader); });
+                DOM.offerList.querySelectorAll('.order-btn').forEach(b => b.onclick = (e) => { e.stopPropagation(); orderFromOffer(Number(b.dataset.id)); });
+                DOM.offerList.querySelectorAll('.thumb-up').forEach(b => b.onclick = (e) => { e.stopPropagation(); rateTrader(b.dataset.trader, 'up'); });
+                DOM.offerList.querySelectorAll('.thumb-down').forEach(b => b.onclick = (e) => { e.stopPropagation(); rateTrader(b.dataset.trader, 'down'); });
+            }
+
+            function loadMoreOffers() {
+                if (!state.remainingOffers || state.remainingOffers.length === 0) return;
+                const chunkSize = getChunkSize();
+                const nextBatch = state.remainingOffers.slice(0, chunkSize);
+                state.remainingOffers = state.remainingOffers.slice(chunkSize);
+                const container = DOM.offerList;
+                const html = nextBatch.map(o => {
+                    const t = getTrader(o.trader);
+                    const action = o.side === 'sell' ? 'BUY' : 'SELL';
+                    const digits = o.asset === 'SOL' ? 2 : o.asset === 'BTC' ? 4 : o.asset === 'BONK' ? 8 : 2;
+                    const rateStr = o.rate >= 100 ? fmt(o.rate, 2) : o.rate.toFixed(4);
+                    const minAsset = minAssetAmount(o);
+                    const minDisplay = `${fmt(o.minQuote)} ${o.quote} (≈ ${fmt(minAsset, digits)} ${o.asset})`;
+                    return `<article class="offer" role="listitem">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                            ${traderCard(o.trader)}
+                            ${presenceBadge(t ? t.status : 'offline')}
+                        </div>
+                        <div class="offer-rate">${rateStr} <span class="rate-unit">${o.quote} / ${o.asset}</span></div>
+                        <div class="offer-metrics">
+                            <div class="metric"><small>AVAILABLE</small><strong>${fmt(o.available, digits)} ${o.asset}</strong></div>
+                            <div class="metric"><small>MIN TRADE</small><strong>${minDisplay}</strong></div>
+                            <div class="metric"><small>LIMITS</small><strong>${offerLimitText(o)}</strong></div>
+                        </div>
+                        <div class="offer-actions">
+                            <button class="link-btn profile-btn" data-trader="${o.trader}">View profile</button>
+                            <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                                <button class="ghost chat-btn" data-trader="${o.trader}">Chat</button>
+                                <button class="primary order-btn" data-id="${o.id}">${action} ${o.asset}</button>
+                            </div>
+                        </div>
+                    </article>`;
+                }).join('');
+                container.insertAdjacentHTML('beforeend', html);
+                nextBatch.forEach(o => setViewedOffer(o.id));
+                container.querySelectorAll('.profile-btn').forEach(b => b.onclick = (e) => { e.stopPropagation(); profileModal(b.dataset.trader); });
+                container.querySelectorAll('.chat-btn').forEach(b => b.onclick = (e) => { e.stopPropagation(); openChat(b.dataset.trader); });
+                container.querySelectorAll('.order-btn').forEach(b => b.onclick = (e) => { e.stopPropagation(); orderFromOffer(Number(b.dataset.id)); });
+                container.querySelectorAll('.thumb-up').forEach(b => b.onclick = (e) => { e.stopPropagation(); rateTrader(b.dataset.trader, 'up'); });
+                container.querySelectorAll('.thumb-down').forEach(b => b.onclick = (e) => { e.stopPropagation(); rateTrader(b.dataset.trader, 'down'); });
+                DOM.loadMoreBtn.hidden = state.remainingOffers.length === 0;
+            }
+
+            function rateTrader(tid, type) {
+                const t = getTrader(tid);
+                if (!t) return;
+                if (type === 'up') t.thumbsUp++;
+                else if (type === 'down') t.thumbsDown++;
+                const btns = document.querySelectorAll(`.thumb-btn[data-trader="${tid}"]`);
+                if (btns.length) {
+                    btns.forEach(btn => {
+                        if (btn.classList.contains('thumb-up')) btn.innerHTML = `👍 ${t.thumbsUp}`;
+                        if (btn.classList.contains('thumb-down')) btn.innerHTML = `👎 ${t.thumbsDown}`;
+                    });
+                } else {
+                    renderOffers(); renderChats(); renderFeatured();
+                }
+                showToast(type === 'up' ? '👍 Liked' : '👎 Disliked');
+            }
+
+            function renderArbs() {
+                const arbs = getArbOpportunities();
+                const best = arbs.length ? arbs[0] : null;
+                DOM.arbCount.textContent = arbs.length;
+                DOM.bestROI.textContent = best ? best.roi.toFixed(2) + '%' : '0.00%';
+                if (!arbs.length) { DOM.arbRows.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px;">No arbitrage opportunities available.</td></tr>`; return; }
+                DOM.arbRows.innerHTML = arbs.map((x, i) => {
+                    const sTrader = getTrader(x.s.trader);
+                    const bTrader = getTrader(x.b.trader);
+                    return `<tr>
+                        <td><strong>${x.s.asset}/${x.s.quote}</strong><div class="micro">${x.s.network}</div></td>
+                        <td>${sTrader ? sTrader.name : '?'}${sTrader && sTrader.verified ? ' ✓' : ''}</td>
+                        <td>${bTrader ? bTrader.name : '?'}${bTrader && bTrader.verified ? ' ✓' : ''}</td>
+                        <td>${x.s.rate >= 100 ? fmt(x.s.rate,2) : x.s.rate.toFixed(4)}</td>
+                        <td>${x.b.rate >= 100 ? fmt(x.b.rate,2) : x.b.rate.toFixed(4)}</td>
+                        <td class="profit">+${x.roi.toFixed(2)}%</td>
+                        <td><div class="bar"><span style="width:${Math.max(20,x.liq)}%"></span></div></td>
+                        <td><button class="ghost arb-select" data-index="${i}">Preview</button></td>
+                    </tr>`;
+                }).join('');
+                DOM.arbRows.querySelectorAll('.arb-select').forEach(b => b.onclick = () => {
+                    const idx = Number(b.dataset.index);
+                    const data = getArbOpportunities();
+                    if (data[idx]) { state.selectedArb = idx; updateCalc(data[idx]); openArbDetails(data[idx]); }
+                });
+                if (best) updateCalc(best);
+                DOM.viewRouteBtn.onclick = () => {
+                    const data = getArbOpportunities();
+                    const idx = clamp(state.selectedArb, 0, data.length - 1);
+                    if (data[idx]) openArbDetails(data[idx]);
+                    else if (data.length) openArbDetails(data[0]);
+                };
+                DOM.maxProfitBtn.onclick = () => {
+                    const data = getArbOpportunities();
+                    const idx = clamp(state.selectedArb, 0, data.length - 1);
+                    if (data[idx]) {
+                        const x = data[idx];
+                        const maxAmt = Math.min(x.s.available, x.b.available, x.s.maxQuote / x.s.rate, x.b.maxQuote / x.b.rate);
+                        DOM.capitalInput.value = maxAmt.toFixed(4);
+                        recalcAmount(x);
+                    }
+                };
+            }
+
+            function updateCalc(x) {
+                if (!x) return;
+                DOM.calcBuyRate.textContent = x.s.rate >= 100 ? fmt(x.s.rate,2) : x.s.rate.toFixed(4);
+                DOM.calcSellRate.textContent = x.b.rate >= 100 ? fmt(x.b.rate,2) : x.b.rate.toFixed(4);
+                const sName = getTrader(x.s.trader);
+                const bName = getTrader(x.b.trader);
+                DOM.calcBuyName.textContent = (sName ? sName.name : '?') + (sName && sName.verified ? ' ✓' : '');
+                DOM.calcSellName.textContent = (bName ? bName.name : '?') + (bName && bName.verified ? ' ✓' : '');
+                recalcAmount(x);
+            }
+
+            function recalcAmount(x) {
+                if (!x) return;
+                const cap = Math.max(100, Number(DOM.capitalInput.value) || 100);
+                const feePct = Number(DOM.feePct.value) || 0;
+                const networkFee = Number(DOM.networkFee.value) || 0;
+                const slippagePct = Number(DOM.slippagePct.value) || 0;
+                const gross = cap * (1 + x.edgePct / 100);
+                const tradingFee = cap * (feePct / 100);
+                const slippage = cap * (slippagePct / 100);
+                const totalCosts = tradingFee + networkFee + slippage;
+                const net = gross - cap - totalCosts;
+                DOM.grossReturn.textContent = fmt(gross) + ' ' + x.s.quote;
+                DOM.tradingFee.textContent = '−' + fmt(tradingFee) + ' ' + x.s.quote;
+                DOM.networkFeeDisplay.textContent = '−' + fmt(networkFee) + ' ' + x.s.quote;
+                DOM.slippageDisplay.textContent = '−' + fmt(slippage) + ' ' + x.s.quote;
+                DOM.netProfit.textContent = (net >= 0 ? '+' : '') + fmt(net) + ' ' + x.s.quote;
+                DOM.netROI.textContent = (net / cap * 100).toFixed(2) + '%';
+            }
+
+            function renderOrders() {
+                expireEscrowOrders();
+                const baseOrders = [
+                    { id: 'NX-48291', trader: 'trader0', asset: 'USDT', amount: '328.95', rate: '0.998', status: 'Payment pending', mins: 9 },
+                    { id: 'NX-48277', trader: 'trader2', asset: 'SOL', amount: '4.80', rate: '181.42', status: 'Waiting release', mins: 4 },
+                    { id: 'NX-48256', trader: 'trader4', asset: 'USDC', amount: '750', rate: '1.008', status: 'Buyer confirmed', mins: 13 }
+                ];
+                const baseOrdersMapped = baseOrders.map(o => ({...o, remaining: o.mins*60*1000, isEscrow: false}));
+                const escrowOrders = Object.values(state.localEscrow.orders).sort((a,b)=>b.createdAt-a.createdAt).map(o => ({
+                    id: o.id, trader: o.trader, asset: o.asset, amount: o.amount, rate: o.rate,
+                    status: o.status === 'escrow_locked' ? 'Escrow locked' : o.status === 'payment_marked' ? 'Payment marked' : o.status === 'completed' ? 'Completed' : 'Cancelled',
+                    remaining: o.status === 'completed' || o.status === 'cancelled' ? 0 : Math.max(0, o.expiresAt - Date.now()),
+                    isEscrow: true, offerId: o.offerId
+                }));
+                const allOrders = [...escrowOrders, ...baseOrdersMapped];
+                DOM.activeOrders.textContent = escrowOrders.filter(o => !['Completed','Cancelled'].includes(o.status)).length;
+                if (!allOrders.length) { DOM.orderList.innerHTML = `<div style="color:var(--muted);text-align:center;padding:20px;">No active orders.</div>`; return; }
+                DOM.orderList.innerHTML = allOrders.map(o => {
+                    const remainingStr = o.remaining ? formatRemaining(o.remaining) : '—';
+                    const isEscrow = o.isEscrow && state.localEscrow.orders[o.id];
+                    return `<div class="card pad order-item" role="listitem">
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                            ${traderCard(o.trader)}
+                            <span class="tag">${o.status}</span>
+                        </div>
+                        <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:12px;">
+                            <div><div class="micro">AMOUNT</div><strong>${o.amount} ${o.asset}</strong></div>
+                            <div><div class="micro">RATE</div><strong>${o.rate}</strong></div>
+                            <div><div class="micro">TIMER</div><strong class="cyan order-countdown" data-expires="${o.remaining ? Date.now()+o.remaining : 0}">${remainingStr}</strong></div>
+                        </div>
+                        <div style="margin-top:10px;">
+                            ${isEscrow ? `<button class="ghost order-open" data-id="${o.id}" data-trader="${o.trader}">Open order</button>` : `<button class="ghost order-chat" data-trader="${o.trader}">Chat</button>`}
+                        </div>
+                    </div>`;
+                }).join('');
+                DOM.orderList.querySelectorAll('.order-open').forEach(b => b.onclick = () => { const o = state.localEscrow.orders[b.dataset.id]; if (o) orderFromOffer(o.offerId, o); });
+                DOM.orderList.querySelectorAll('.order-chat').forEach(b => b.onclick = () => openChat(b.dataset.trader));
+            }
+
+            function renderFeatured() {
+                const id = traderIds[Math.floor(Math.random()*traderIds.length)];
+                const t = getTrader(id);
+                if (!t) return;
+                DOM.featuredProfile.innerHTML = `
+                    <div class="profile-box">
+                        ${avatarHtml(id, 'lg')}
+                        <div>
+                            <div>
+                                <strong>${t.name}</strong>
+                                ${t.verified ? '<span class="verified">VERIFIED</span>' : ''}
+                                <span class="rating">★ ${t.rating.toFixed(2)}</span>
+                                ${thumbGroup(id)}
+                            </div>
+                            <div class="handle">${t.handle}</div>
+                            <div style="margin-top:6px;">${presenceBadge(t.status)}</div>
+                            <div class="bio">${t.bio}</div>
+                            <div class="stats-line">
+                                <span>★ ${t.rating}</span>
+                                <span>${t.completion}% completion</span>
+                                <span>${t.orders.toLocaleString()} orders</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="primary" onclick="window.openChat('${id}')">Chat</button>
+                        <button class="ghost" onclick="window.profileModal('${id}')">View profile</button>
+                    </div>
+                `;
+            }
+
+            function renderFeed() {
+                if (state.feedTimeouts.length) { state.feedTimeouts.forEach(id => clearTimeout(id)); state.feedTimeouts = []; }
+                const entries = [
+                    ['SCAN', '800 sample P2P offers indexed', 'info'],
+                    ['ROUTE', 'USDT/USDC spread confirmed · +1.06% gross', 'success'],
+                    ['RISK', 'Counterparty completion and liquidity checks passed', 'warn'],
+                    ['CHAT', 'New message from Alex Trades', 'info'],
+                    ['ROUTE', 'SOL/USDC opportunity widened · +1.85% edge', 'success'],
+                    ['ORDER', 'NX-48291 timer running · 09:14 remaining', 'info'],
+                    ['AI', 'NEURA score 96.8 · manual route eligible', 'info']
+                ];
+                DOM.feed.innerHTML = '';
+                entries.forEach((m, i) => {
+                    const timeoutId = setTimeout(() => feedLine(m[0], m[1], m[2] || 'info'), i * 70);
+                    state.feedTimeouts.push(timeoutId);
+                });
+            }
+
+            function feedLine(tag, msg, tone = 'info') {
+                const entry = document.createElement('div');
+                entry.className = 'feed-entry';
+                entry.innerHTML = `
+                    <div class="feed-dot ${tone}"></div>
+                    <div class="feed-content">
+                        <div class="feed-meta"><span class="feed-tag">${tag}</span><span class="feed-time">${new Date().toLocaleTimeString('en-GB', { hour12: false })}</span></div>
+                        <div class="feed-message ${tone}">${msg}</div>
+                    </div>
+                `;
+                DOM.feed.prepend(entry);
+                while (DOM.feed.children.length > 35) DOM.feed.lastChild.remove();
+            }
+
+            function formatRemaining(ms) {
+                const total = Math.max(0, Math.ceil(ms / 1000));
+                const h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), sec = total % 60;
+                return h ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}` : `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+            }
+
+            function updateCountdowns() {
+                expireEscrowOrders();
+                document.querySelectorAll('.order-countdown').forEach(el => {
+                    const exp = Number(el.dataset.expires || 0);
+                    if (!exp) return;
+                    const left = Math.max(0, exp - Date.now());
+                    el.textContent = left ? formatRemaining(left) : 'EXPIRED';
+                    if (!left) renderOrders();
+                });
+            }
+
+            /* ── modal system ── */
+            function openModal(html) {
+                if (state.modalTimer) { clearInterval(state.modalTimer); state.modalTimer = null; }
+                DOM.modal.innerHTML = html;
+                DOM.modalBackdrop.classList.remove('hidden');
+                const focusable = DOM.modal.querySelector('button, input, select, [tabindex="0"]');
+                if (focusable) setTimeout(() => focusable.focus(), 50);
+                const closeBtn = DOM.modal.querySelector('#closeModal');
+                if (closeBtn) closeBtn.onclick = closeModal;
+                DOM.modalBackdrop.onclick = (e) => { if (e.target === DOM.modalBackdrop) closeModal(); };
+                document.removeEventListener('keydown', closeOnEscape);
+                document.addEventListener('keydown', closeOnEscape);
+            }
+            function closeModal() {
+                if (state.modalTimer) { clearInterval(state.modalTimer); state.modalTimer = null; }
+                DOM.modalBackdrop.classList.add('hidden');
+                DOM.modal.innerHTML = '';
+                document.removeEventListener('keydown', closeOnEscape);
+            }
+            function closeOnEscape(e) { if (e.key === 'Escape') closeModal(); }
+            function showToast(msg, duration = 2800) {
+                const t = DOM.toast;
+                t.textContent = msg;
+                t.classList.add('visible');
+                clearTimeout(t._hide);
+                t._hide = setTimeout(() => t.classList.remove('visible'), duration);
+            }
+
+            /* ── order flow ── */
+            async function orderFromOffer(offerId, existingOrder = null) {
+                const o = getOffer(offerId);
+                if (!o) { showToast('Offer not found.'); return; }
+                const t = getTrader(o.trader);
+                if (!t) { showToast('Trader not found.'); return; }
+                const action = o.side === 'sell' ? 'BUY' : 'SELL';
+                const wallet = getWallet(o.trader);
+                let order = existingOrder;
+
+                if (!order) {
+                    try {
+                        const defaultAmt = Math.min(o.available, Math.max(minAssetAmount(o), Math.min(maxAssetAmount(o), minAssetAmount(o) * 2)));
+                        const result = await escrowCreate(o.id, defaultAmt);
+                        order = result.order;
+                        showToast('Escrow locked the offer inventory.');
+                    } catch (err) {
+                        showToast(err.message || 'Unable to create order.');
+                        return;
+                    }
+                }
+
+                const stored = state.localEscrow.orders[order.id];
+                if (stored) order = stored;
+                let remaining = Math.max(0, Math.ceil((order.expiresAt - Date.now()) / 1000));
+
+                const renderOrderModal = () => {
+                    const rateStr = o.rate >= 100 ? fmt(o.rate, 2) : o.rate.toFixed(4);
+                    const minAmt = minAssetAmount(o);
+                    const maxAmt = maxAssetAmount(o);
+                    const statusLabel = order.status === 'escrow_locked' ? 'Escrow Locked' : order.status === 'payment_marked' ? 'Payment Marked' : order.status === 'completed' ? 'Completed' : 'Cancelled';
+
+                    let actionButtons = '';
+                    if (order.status === 'escrow_locked') actionButtons = `<button class="primary" id="markPaid">I HAVE PAID</button>`;
+                    else if (order.status === 'payment_marked') actionButtons = `<button class="primary" id="releaseAsset">RELEASE ASSET</button>`;
+                    else actionButtons = `<span class="tag">${statusLabel.toUpperCase()}</span>`;
+                    const cancelBtn = !['completed','cancelled'].includes(order.status) ? `<button class="ghost" id="cancelOrder">Cancel order</button>` : '';
+
+                    openModal(`<div class="modal-head">
+                        <div>
+                            <div class="kicker">P2P ORDER · ESCROW</div>
+                            <h2 id="modalTitle">${action} ${o.asset}</h2>
+                            <div class="micro">${order.id} · ${o.network}</div>
+                        </div>
+                        <button class="close" id="closeModal" aria-label="Close modal">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="warning-banner">
+                            <strong>Security Reminder:</strong> Always verify the counterparty's profile, completion rate, and payment details before sending funds. NEXUS does not hold real assets and cannot reverse transactions. Trade at your own risk.
+                        </div>
+                        <div class="profile-box">
+                            ${traderCard(o.trader)}
+                            <div style="margin-left:auto;text-align:right;">
+                                ${presenceBadge(t.status)}
+                                <div class="micro" style="margin-top:6px;">${t.completion}% completion</div>
+                            </div>
+                        </div>
+                        <div class="grid12" style="margin-top:16px;">
+                            <div class="span6">
+                                <div class="field">
+                                    <label>RATE</label>
+                                    <div class="big-number">${rateStr} <span style="font-size:12px;color:var(--muted);">${o.quote}/${o.asset}</span></div>
+                                </div>
+                            </div>
+                            <div class="span6">
+                                <div class="field">
+                                    <label>AMOUNT (${o.asset})</label>
+                                    <input id="orderAmount" type="number" value="${order.amount}" min="${minAmt.toFixed(8)}" max="${maxAmt.toFixed(8)}" step="0.01" disabled>
+                                    <div class="micro" style="margin-top:6px;">Min: ${fmt(o.minQuote)} ${o.quote} (≈${fmt(minAmt, 4)} ${o.asset}) · Max: ${fmt(o.maxQuote)} ${o.quote} (≈${fmt(maxAmt, 4)} ${o.asset})</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:14px;">
+                            <div class="field">
+                                <label>ASSIGNED ${action === 'BUY' ? 'SELLER' : 'BUYER'} WALLET</label>
+                                <div class="wallet-assignment">
+                                    <div class="address" id="orderWallet">${wallet}</div>
+                                    <button class="copy-btn" id="copyWallet">Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:14px;">
+                            <div class="field">
+                                <label>ESCROW TIMER</label>
+                                <div class="timer" id="orderTimer">${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}</div>
+                            </div>
+                        </div>
+                        <div class="status-track">
+                            <div class="track-step ${order.status !== 'cancelled' ? 'active' : ''}">ORDER CREATED</div>
+                            <div class="track-step ${['payment_marked','completed'].includes(order.status) ? 'active' : ''}">PAYMENT</div>
+                            <div class="track-step ${order.status === 'completed' ? 'active' : ''}">ASSET RELEASE</div>
+                            <div class="track-step ${order.status === 'completed' ? 'active' : ''}">COMPLETE</div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:10px;">
+                            <div class="micro">🔒 ${order.status === 'escrow_locked' ? 'Assets are locked in escrow.' : 'Escrow status: '+statusLabel}</div>
+                            ${actionButtons}
+                        </div>
+                        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+                            <button class="ghost" id="openOrderChat">Open chat</button>
+                            ${cancelBtn}
+                        </div>
+                    </div>`);
+
+                    const modalEl = DOM.modal;
+                    modalEl.querySelector('#copyWallet')?.addEventListener('click', () => navigator.clipboard?.writeText(wallet).then(()=>showToast('Wallet address copied.')).catch(()=>showToast('Copy manually.')));
+                    modalEl.querySelector('#openOrderChat')?.addEventListener('click', () => openChat(o.trader));
+                    modalEl.querySelector('#cancelOrder')?.addEventListener('click', async () => {
+                        try { const r = await escrowAction(order.id, 'cancel'); order = r.order; showToast('Escrow unlocked the asset.'); closeModal(); renderOrders(); renderOffers(); } catch(e) { showToast(e.message); }
+                    });
+                    modalEl.querySelector('#markPaid')?.addEventListener('click', async () => {
+                        try { const r = await escrowAction(order.id, 'paid'); order = r.order; remaining = Math.max(0, Math.ceil((order.expiresAt - Date.now())/1000)); renderOrderModal(); showToast('Payment marked. Escrow remains locked pending release.'); } catch(e) { showToast(e.message); }
+                    });
+                    modalEl.querySelector('#releaseAsset')?.addEventListener('click', async () => {
+                        try { const r = await escrowAction(order.id, 'release'); order = r.order; renderOrderModal(); showToast('Escrow released the asset.'); renderOrders(); renderOffers(); } catch(e) { showToast(e.message); }
+                    });
+                };
+
+                clearInterval(state.modalTimer);
+                state.modalTimer = setInterval(() => {
+                    remaining = Math.max(0, Math.ceil((order.expiresAt - Date.now())/1000));
+                    const timerEl = document.getElementById('orderTimer');
+                    if (timerEl) timerEl.textContent = `${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
+                    if (remaining <= 0) {
+                        clearInterval(state.modalTimer); state.modalTimer = null;
+                        expireEscrowOrders();
+                        const updated = state.localEscrow.orders[order.id];
+                        if (updated && updated.status === 'escrow_locked') {
+                            updated.status = 'cancelled'; updated.cancelReason = 'expired';
+                            const locked = state.localEscrow.locked[updated.offerId] || 0;
+                            state.localEscrow.locked[updated.offerId] = Math.max(0, locked - updated.amount);
+                            saveEscrow();
+                            order = updated; renderOrderModal(); renderOrders(); renderOffers();
+                            showToast('Order expired. Escrow inventory was unlocked.');
+                        }
+                    }
+                }, 1000);
+
+                renderOrderModal();
+            }
+
+            /* ── chat modal with typing indicator and message pool ── */
+            const MESSAGE_POOLS = {
+                formal: {
+                    general: [
+                        'Thank you for reaching out. How may I assist you?',
+                        'I appreciate your message. Please allow me a moment to review.',
+                        'Understood. I will attend to this promptly.',
+                        'Please provide your order ID for verification.'
+                    ],
+                    payment: [
+                        'Payment received. I will release the assets shortly.',
+                        'Thank you for the payment. The escrow is now being updated.',
+                        'Your payment has been confirmed. Proceeding with the release.',
+                        'I have verified the payment. The assets will be released now.'
+                    ],
+                    release: [
+                        'The assets have been released. You should receive them shortly.',
+                        'Release complete. Thank you for your patience.',
+                        'Your assets are on the way. Please allow a few minutes for confirmation.',
+                        'The transaction has been processed. Have a pleasant day.'
+                    ],
+                    amount: [
+                        'The minimum trade amount is 100 USDC.',
+                        'I can accommodate that amount. Would you like to proceed?',
+                        'Please ensure the amount falls within the offer limits.',
+                        'The maximum I can trade at this rate is {max} {quote}.'
+                    ],
+                    greeting: [
+                        'Good day. How can I help you today?',
+                        'Hello. It is a pleasure to assist you.',
+                        'Greetings. How may I be of service?'
+                    ]
+                },
+                casual: {
+                    general: [
+                        'Hey! What can I do for you?',
+                        'Hi there! How’s it going?',
+                        'Yo! Need help with a trade?',
+                        'Hey, I’m here. What’s up?'
+                    ],
+                    payment: [
+                        'Got the payment, thanks! Will release now.',
+                        'Payment received. Let me send the assets.',
+                        'Thanks! Releasing in a sec.',
+                        'Got it 👍 Releasing now.'
+                    ],
+                    release: [
+                        'Just sent it! Check your wallet.',
+                        'Done! You should see it soon.',
+                        'Released! Let me know if you need anything else.',
+                        'All done! Thanks for trading with me 🙌'
+                    ],
+                    amount: [
+                        'Min is 100 USDC. How much do you want?',
+                        'I can do that. Let’s go!',
+                        'That works for me. 👍',
+                        'Hmm, that might be a bit outside my limits.'
+                    ],
+                    greeting: [
+                        'Hey! Ready to trade?',
+                        'Hi! What brings you here?',
+                        'Yo! Let’s make a deal.'
+                    ]
+                },
+                terse: {
+                    general: ['ok', 'yes', 'no', 'wait', 'send id', 'what do you need?'],
+                    payment: ['got it', 'releasing', 'paid', 'ok, will send'],
+                    release: ['sent', 'done', 'check wallet'],
+                    amount: ['min 100', 'ok', 'too high', 'maybe'],
+                    greeting: ['hi', 'hey', 'hello']
+                },
+                friendly: {
+                    general: [
+                        'Hi there! 😊 How can I help?',
+                        'Hello! I’m here to assist you.',
+                        'Hey! What can I do for you today?',
+                        'Hi! Thanks for chatting with me.'
+                    ],
+                    payment: [
+                        'Awesome! I’ve received your payment. Releasing now! 🎉',
+                        'Thank you so much! I’ll release right away.',
+                        'Great! Payment confirmed. Sending your assets.',
+                        'Perfect! Just released. Let me know if you got it.'
+                    ],
+                    release: [
+                        'All done! Your assets are on the way. 😊',
+                        'Released! It was a pleasure trading with you.',
+                        'Sent! Have a great day!',
+                        'Completed! Let me know if you need anything else.'
+                    ],
+                    amount: [
+                        'I can work with that amount! Would you like to proceed?',
+                        'That sounds good to me. 😊',
+                        'I’d be happy to trade that amount.',
+                        'Let me check if that falls within my limits.'
+                    ],
+                    greeting: [
+                        'Hello! 😊 How are you today?',
+                        'Hi! Great to see you here!',
+                        'Hey there! Ready to trade?'
+                    ]
+                },
+                technical: {
+                    general: [
+                        'Please provide the transaction ID for verification.',
+                        'The escrow contract is ready. Awaiting your payment.',
+                        'Network fees will apply. Confirm to proceed.',
+                        'The trade parameters are within acceptable limits.'
+                    ],
+                    payment: [
+                        'Payment detected on-chain. Preparing release.',
+                        'Transaction hash received. Escrow release initiated.',
+                        'The payment has been confirmed by the network.',
+                        'Receipt verified. Releasing assets from escrow.'
+                    ],
+                    release: [
+                        'The release transaction has been broadcast.',
+                        'Assets sent. Await network confirmation.',
+                        'The escrow contract has been settled.',
+                        'Transaction completed. You may verify on-chain.'
+                    ],
+                    amount: [
+                        'The minimum quote is 100 USDC.',
+                        'Please specify the exact amount.',
+                        'The maximum available is {max} {quote}.',
+                        'The amount must be within the offer limits.'
+                    ],
+                    greeting: [
+                        'Hello. How may I assist with your trade?',
+                        'Welcome. Please state your requirements.',
+                        'Greetings. What are you looking to trade?'
+                    ]
+                },
+                slang: {
+                    general: [
+                        'Yo, what’s good? 😎',
+                        'Hey, you tryna trade?',
+                        'What’s up? Need some {asset}?',
+                        'Aye, I’m here. What you need?'
+                    ],
+                    payment: [
+                        'Got the bag 💰 Releasing now.',
+                        'Payment hit. Sending your stuff.',
+                        'Bet, I’m on it. 🔥',
+                        'Copy that. Releasing.'
+                    ],
+                    release: [
+                        'Sent that 💨',
+                        'Done deal. Check it.',
+                        'Released. We good?',
+                        'All yours. Enjoy!'
+                    ],
+                    amount: [
+                        'Min 100. How much?',
+                        'I can do that. Let’s run it.',
+                        'That’s cool with me.',
+                        'Too much? Nah, we can work it.'
+                    ],
+                    greeting: [
+                        'Yo!',
+                        'Aye!',
+                        'What’s good?'
+                    ]
+                }
+            };
+
+            function getMessage(trader, category) {
+                const persona = trader.persona;
+                const style = persona.languageStyle;
+                const pool = MESSAGE_POOLS[style]?.[category] || MESSAGE_POOLS.formal.general;
+                const unused = pool.filter((_, idx) => !trader.usedMessages.includes(`${category}-${idx}`));
+                if (unused.length === 0) {
+                    trader.usedMessages = [];
+                    return pool[Math.floor(Math.random()*pool.length)];
+                }
+                const msg = unused[Math.floor(Math.random()*unused.length)];
+                const idx = pool.indexOf(msg);
+                trader.usedMessages.push(`${category}-${idx}`);
+                return msg.replace('{max}', trader.maxTrade || '...').replace('{quote}', trader.quote || 'USDC');
+            }
+
+            function openChat(tid) {
+                const t = getTrader(tid);
+                if (!t) { showToast('Trader not found.'); return; }
+                if (t.status === 'offline') { showToast(`${t.name} is offline. Chat will be available when they return.`); return; }
+                state.chatTrader = tid;
+                const persona = t.persona;
+                const replyDelay = persona.responseSpeed === 'instant' ? 300 : persona.responseSpeed === 'fast' ? 700 : persona.responseSpeed === 'medium' ? 1500 : 3000;
+
+                openModal(`<div class="modal-head">
+                    <div>
+                        ${traderCard(tid)}
+                        <div class="micro" style="margin-top:4px;">Private P2P chat · ${presenceBadge(t.status)}${t.status === 'away' ? ' · may respond slowly' : ''}</div>
+                    </div>
+                    <button class="close" id="closeModal" aria-label="Close chat">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="message-list" id="messageList"></div>
+                    <div class="chat-compose">
+                        <input id="chatInput" placeholder="Type a message…" aria-label="Chat message">
+                        <button class="primary" id="sendChat">Send</button>
+                    </div>
+                </div>`);
+                const input = document.getElementById('chatInput');
+                const sendBtn = document.getElementById('sendChat');
+                const list = document.getElementById('messageList');
+                if (input && sendBtn && list) {
+                    const sendMsg = () => {
+                        const v = input.value.trim();
+                        if (!v) return;
+                        const b = document.createElement('div'); b.className = 'bubble me'; b.textContent = v;
+                        list.appendChild(b); input.value = ''; list.scrollTop = list.scrollHeight;
+                        const typing = document.createElement('div');
+                        typing.className = 'typing-indicator';
+                        typing.innerHTML = `${avatarHtml(tid, 'sm')}<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+                        list.appendChild(typing);
+                        list.scrollTop = list.scrollHeight;
+                        let category = 'general';
+                        if (/paid|sent|payment/i.test(v)) category = 'payment';
+                        else if (/release|send|asset/i.test(v)) category = 'release';
+                        else if (/amount|how much|price|rate/i.test(v)) category = 'amount';
+                        else if (/hi|hello|hey/i.test(v)) category = 'greeting';
+                        const reply = getMessage(t, category);
+                        setTimeout(() => {
+                            typing.remove();
+                            const r = document.createElement('div'); r.className = 'bubble them';
+                            r.textContent = reply;
+                            list.appendChild(r); list.scrollTop = list.scrollHeight;
+                        }, replyDelay);
+                    };
+                    sendBtn.onclick = sendMsg;
+                    input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
+                    setTimeout(() => input.focus(), 100);
+                }
+            }
+
+            /* ── profile modal ── */
+            function profileModal(tid) {
+                const t = getTrader(tid);
+                if (!t) { showToast('Trader not found.'); return; }
+                openModal(`<div class="modal-head">
+                    <div>
+                        <div class="kicker">TRADER PROFILE</div>
+                        <h2 id="modalTitle">${t.name}</h2>
+                    </div>
+                    <button class="close" id="closeModal" aria-label="Close profile">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="profile-box">
+                        ${avatarHtml(tid, 'lg')}
+                        <div>
+                            <div>
+                                <strong>${t.handle}</strong>
+                                ${t.verified ? '<span class="verified">VERIFIED</span>' : ''}
+                                <span class="rating">★ ${t.rating.toFixed(2)}</span>
+                                ${thumbGroup(tid)}
+                            </div>
+                            <div style="margin-top:5px;">${presenceBadge(t.status)}</div>
+                            <div class="bio">${t.bio}</div>
+                        </div>
+                    </div>
+                    <div class="stats-line">
+                        <span>★ ${t.rating}</span>
+                        <span>${t.orders.toLocaleString()} orders</span>
+                        <span>${t.completion}% completion</span>
+                        <span>Avg. release ${t.release}</span>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="primary" id="profileChat">Chat</button>
+                        <button class="ghost" id="profileOffers">View offers</button>
+                    </div>
+                </div>`);
+                document.getElementById('profileChat')?.addEventListener('click', () => { closeModal(); openChat(tid); });
+                document.getElementById('profileOffers')?.addEventListener('click', () => {
+                    closeModal();
+                    state.search = t.name;
+                    DOM.searchInput.value = t.name;
+                    renderOffers();
+                    document.getElementById('market').scrollIntoView({ behavior: 'smooth' });
+                });
+                DOM.modal.querySelectorAll('.thumb-up').forEach(b => b.onclick = () => rateTrader(tid, 'up'));
+                DOM.modal.querySelectorAll('.thumb-down').forEach(b => b.onclick = () => rateTrader(tid, 'down'));
+            }
+
+            /* ── arbitrage details modal ── */
+            function openArbDetails(x) {
+                if (!x) { showToast('No arbitrage data available.'); return; }
+                openModal(`<div class="modal-head">
+                    <div>
+                        <div class="kicker">NEURA ROUTE</div>
+                        <h2 id="modalTitle">${x.s.asset}/${x.s.quote} · ${x.s.network}</h2>
+                    </div>
+                    <button class="close" id="closeModal" aria-label="Close">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="grid12">
+                        <div class="span6 side-box">
+                            <div class="side-label">BUY FROM</div>
+                            ${traderCard(x.s.trader)}
+                            <div class="side-rate" style="margin-top:12px;">${x.s.rate >= 100 ? fmt(x.s.rate,2) : x.s.rate.toFixed(4)}</div>
+                            <div class="micro">Available ${fmt(x.s.available)} ${x.s.asset}</div>
+                            <div style="margin-top:10px;"><button class="primary" id="buyDetails">View buy offer</button></div>
+                        </div>
+                        <div class="span6 side-box">
+                            <div class="side-label">SELL TO</div>
+                            ${traderCard(x.b.trader)}
+                            <div class="side-rate" style="margin-top:12px;">${x.b.rate >= 100 ? fmt(x.b.rate,2) : x.b.rate.toFixed(4)}</div>
+                            <div class="micro">Available ${fmt(x.b.available)} ${x.s.asset}</div>
+                            <div style="margin-top:10px;"><button class="primary" id="sellDetails">View sell offer</button></div>
+                        </div>
+                    </div>
+                    <div class="calc" style="margin-top:16px;">
+                        <div class="calc-row"><span>Gross spread</span><strong>+${x.edgePct.toFixed(2)}%</strong></div>
+                        <div class="calc-row"><span>Estimated costs</span><strong>−${fmt(x.costs)} ${x.s.quote}</strong></div>
+                        <div class="calc-row net"><span>Estimated NET ROI</span><strong>${x.roi.toFixed(2)}%</strong></div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:14px;">
+                        <div class="micro">Manual execution. Verify counterparty and destination before sending funds.</div>
+                        <button class="ghost" id="routeChat">Chat buyer/seller</button>
+                    </div>
+                </div>`);
+                document.getElementById('buyDetails')?.addEventListener('click', () => { closeModal(); orderFromOffer(x.s.id); });
+                document.getElementById('sellDetails')?.addEventListener('click', () => { closeModal(); orderFromOffer(x.b.id); });
+                document.getElementById('routeChat')?.addEventListener('click', () => { closeModal(); openChat(x.s.trader); });
+            }
+
+            /* ── presence simulation ── */
+            function simulatePresence() {
+                const changeCount = Math.floor(traderIds.length * 0.1);
+                for (let i=0; i<changeCount; i++) {
+                    const id = traderIds[Math.floor(Math.random()*traderIds.length)];
+                    const statuses = ['online','online','online','away','offline'];
+                    TRADERS[id].status = statuses[Math.floor(Math.random()*statuses.length)];
+                }
+                renderOffers(); renderChats(); renderFeatured();
+            }
+
+            /* ── refresh rates ── */
+            function refreshRates() {
+                OFFERS = OFFERS.map(o => ({ ...o, rate: o.rate * (1 + (Math.random() - 0.5) * 0.004) }));
+                renderOffers(); renderArbs();
+                DOM.scanRate.textContent = OFFERS.length.toLocaleString();
+                feedLine('SCAN', 'Sample rates refreshed · recalculated modeled spreads', 'info');
+                showToast('Sample rates refreshed.');
+            }
+
+            /* ── wallet toggle ── */
+            function toggleWallet() {
+                state.walletConnected = !state.walletConnected;
+                DOM.walletText.textContent = state.walletConnected ? '7xKf…9ab' : 'Connect Wallet';
+                DOM.walletDot.className = 'status-dot ' + (state.walletConnected ? 'online' : 'offline');
+                showToast(state.walletConnected ? 'Wallet session connected. Manual mode ready.' : 'Wallet disconnected.');
+                feedLine('WALLET', state.walletConnected ? 'Wallet connected · manual trading mode' : 'Wallet disconnected', 'info');
+            }
+
+            /* ── init ── */
+            function init() {
+                loadEscrow();
+                expireEscrowOrders();
+
+                renderFilters(); renderOffers(); renderArbs(); renderOrders(); renderChats(); renderFeatured(); renderFeed();
+
+                DOM.sideSeg.addEventListener('click', (e) => {
+                    const btn = e.target.closest('button');
+                    if (!btn) return;
+                    DOM.sideSeg.querySelectorAll('button').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+                    btn.classList.add('active'); btn.setAttribute('aria-pressed','true');
+                    state.side = btn.dataset.side; renderOffers();
+                });
+                DOM.assetFilter.addEventListener('change', () => { state.selectedAsset = DOM.assetFilter.value; renderOffers(); });
+                DOM.networkFilter.addEventListener('change', () => { state.selectedNetwork = DOM.networkFilter.value; renderOffers(); });
+                DOM.amountFilterInput.addEventListener('input', () => {
+                    const raw = Number(DOM.amountFilterInput.value);
+                    const wrap = document.getElementById('amountFilterWrap');
+                    if (raw < 100) {
+                        wrap.classList.add('invalid'); DOM.filterError.classList.remove('hidden');
+                        state.amountFilter = 100; DOM.amountFilterInput.value = 100; DOM.amountHelp.textContent = 'Min: 100';
+                    } else {
+                        wrap.classList.remove('invalid'); DOM.filterError.classList.add('hidden');
+                        state.amountFilter = raw || 100; DOM.amountHelp.textContent = 'Min: 100';
+                    }
+                    renderOffers();
+                });
+                DOM.searchInput.addEventListener('input', () => { state.search = DOM.searchInput.value; renderOffers(); });
+                DOM.refreshBtn.addEventListener('click', refreshRates);
+                DOM.capitalInput.addEventListener('input', () => {
+                    const raw = Number(DOM.capitalInput.value);
+                    if (raw < 100) { DOM.capitalError.classList.remove('hidden'); DOM.capitalInput.value = 100; }
+                    else { DOM.capitalError.classList.add('hidden'); }
+                    const data = getArbOpportunities();
+                    const idx = clamp(state.selectedArb, 0, data.length - 1);
+                    if (data[idx]) recalcAmount(data[idx]);
+                    else if (data.length) recalcAmount(data[0]);
+                });
+                DOM.feePct.addEventListener('input', () => {
+                    const data = getArbOpportunities();
+                    const idx = clamp(state.selectedArb, 0, data.length - 1);
+                    if (data[idx]) recalcAmount(data[idx]);
+                });
+                DOM.networkFee.addEventListener('input', () => {
+                    const data = getArbOpportunities();
+                    const idx = clamp(state.selectedArb, 0, data.length - 1);
+                    if (data[idx]) recalcAmount(data[idx]);
+                });
+                DOM.slippagePct.addEventListener('input', () => {
+                    const data = getArbOpportunities();
+                    const idx = clamp(state.selectedArb, 0, data.length - 1);
+                    if (data[idx]) recalcAmount(data[idx]);
+                });
+                DOM.loadMoreBtn.addEventListener('click', loadMoreOffers);
+                DOM.clearFeedBtn.addEventListener('click', () => {
+                    state.feedTimeouts.forEach(id => clearTimeout(id)); state.feedTimeouts = [];
+                    DOM.feed.innerHTML = ''; showToast('Transaction feed cleared.');
+                });
+                DOM.walletBtn.addEventListener('click', toggleWallet);
+                DOM.modalBackdrop.addEventListener('click', (e) => { if (e.target === DOM.modalBackdrop) closeModal(); });
+
+                state.countdownInterval = setInterval(() => { updateCountdowns(); renderOrders(); }, 1000);
+                state.presenceInterval = setInterval(simulatePresence, 12000);
+                state.feedInterval = setInterval(() => {
+                    expireEscrowOrders();
+                    feedLine('MARKET', `Spread scanner updated · ${(0.72+Math.random()*1.4).toFixed(2)}% candidate edge`, 'success');
+                }, 4500);
+
+                window.openChat = openChat;
+                window.profileModal = profileModal;
+                window.orderFromOffer = orderFromOffer;
+                window.closeModal = closeModal;
+                window.showToast = showToast;
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+        })();
+    </script>
+</body>
+</html>
