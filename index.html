@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="description" content="NEXUS ARBITRAGE v3.1.0 — NEURA P2P Arbitrage Terminal">
+<title>NEXUS ARBITRAGE v3.1.0 · NEURA P2P</title>
+<style>
+:root{
+  --bg:#0a0a0f;--panel:#151520;--panel2:#1f1f2e;--purple:#7132f5;--purple2:#5b1ecf;
+  --cyan:#00d4ff;--green:#00ff41;--red:#ff4d6d;--yellow:#ffc857;--text:rgba(255,255,255,.9);
+  --muted:#94a3b8;--border:rgba(255,255,255,.07);--glass:rgba(255,255,255,.04);--shadow:0 18px 50px rgba(0,0,0,.38)
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;overflow-x:hidden;overscroll-behavior-x:none;background:radial-gradient(800px 500px at 15% 0%,rgba(113,50,245,.14),transparent 60%),radial-gradient(700px 500px at 100% 35%,rgba(0,212,255,.06),transparent 60%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.01em}button,input,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}*{scrollbar-width:thin;scrollbar-color:rgba(113,50,245,.45) rgba(255,255,255,.035)}*::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-track{background:rgba(255,255,255,.025)}*::-webkit-scrollbar-thumb{background:linear-gradient(180deg,rgba(113,50,245,.55),rgba(0,212,255,.28));border-radius:999px;border:2px solid transparent;background-clip:padding-box}*::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,rgba(113,50,245,.75),rgba(0,212,255,.45));border-radius:999px;background-clip:padding-box}.hidden{display:none!important}
+.topbar{position:sticky;top:0;z-index:50;height:76px;padding:0 28px;display:flex;align-items:center;gap:22px;background:rgba(10,10,15,.86);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:11px;min-width:260px}.brand-mark{width:26px;height:26px;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;align-items:end}.brand-mark span{display:block;border-radius:3px;background:linear-gradient(180deg,#9a73ff,#5b1ecf);box-shadow:0 0 16px rgba(113,50,245,.55)}.brand-mark span:nth-child(1){height:48%}.brand-mark span:nth-child(2){height:78%}.brand-mark span:nth-child(3){height:100%}.brand-copy{display:flex;flex-direction:column;line-height:.9}.brand-copy strong{font-size:15px;letter-spacing:.13em}.brand-copy small{font-size:9px;letter-spacing:.28em;color:var(--muted);margin-top:4px}.version{padding:5px 8px;border:1px solid rgba(113,50,245,.35);background:rgba(113,50,245,.08);border-radius:999px;color:#bfa8ff;font-size:11px}.nav{display:flex;align-items:center;gap:6px;flex:1;justify-content:center}.nav a{padding:10px 13px;color:var(--muted);font-size:13px;border-radius:8px}.nav a:hover,.nav a.active{color:#fff;background:rgba(255,255,255,.05)}.wallet-btn{display:flex;align-items:center;gap:9px;border:1px solid rgba(113,50,245,.45);background:linear-gradient(180deg,rgba(113,50,245,.18),rgba(91,30,207,.16));color:#fff;padding:11px 14px;border-radius:10px;box-shadow:0 0 22px rgba(113,50,245,.12)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#667085;box-shadow:0 0 0 3px rgba(102,112,133,.08);transition:.25s ease}.online{background:#35f58a;color:#35f58a;box-shadow:0 0 0 3px rgba(53,245,138,.08),0 0 12px rgba(53,245,138,.28)}.away{background:var(--yellow);color:var(--yellow);box-shadow:0 0 0 3px rgba(246,196,69,.08),0 0 10px rgba(246,196,69,.18)}.offline{background:#667085;color:#667085;box-shadow:0 0 0 3px rgba(102,112,133,.06)}.presence{padding:4px 7px;border:1px solid rgba(255,255,255,.045);border-radius:999px;background:rgba(255,255,255,.018);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);white-space:nowrap}.presence.online{color:#9df3bf}.presence.away{color:#f6dc8e}.presence.offline{color:#9aa3b2}
+.shell{max-width:1500px;margin:0 auto;padding:28px}.grid12{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:20px}.span12{grid-column:span 12}.span8{grid-column:span 8}.span7{grid-column:span 7}.span6{grid-column:span 6}.span5{grid-column:span 5}.span4{grid-column:span 4}.span3{grid-column:span 3}.span2{grid-column:span 2}
+.hero{padding:20px 0 18px}.hero-copy{padding:32px 0 10px}.eyebrow,.kicker{font-size:10px;letter-spacing:.18em;color:#9d8add}.eyebrow{display:flex;align-items:center;gap:7px}.live-pulse{width:7px;height:7px;border-radius:50%;background:#35f58a;box-shadow:0 0 16px #35f58a}.hero h1{font-size:clamp(38px,5.2vw,72px);line-height:.95;letter-spacing:-.045em;margin:16px 0 14px;max-width:880px}.hero h1 em{font-style:normal;background:linear-gradient(90deg,#fff,#bda8ff,#00d4ff);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{max-width:780px;color:var(--muted);line-height:1.65;font-size:15px}
+.card{background:linear-gradient(180deg,rgba(21,21,32,.82),rgba(15,15,24,.78));border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);backdrop-filter:blur(12px)}.pad{padding:18px}.core-card{padding:18px;align-self:end}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.micro{font-size:11px;color:var(--muted)}.core-title{font-weight:700;letter-spacing:.05em}.core-status{color:#55f2a1;font-size:11px}.progress{height:5px;background:rgba(255,255,255,.05);border-radius:999px;overflow:hidden;margin:14px 0}.progress span{display:block;height:100%;width:78%;background:linear-gradient(90deg,var(--purple),var(--cyan));box-shadow:0 0 20px rgba(0,212,255,.35);border-radius:999px}.stats .card{padding:16px}.stat-label{font-size:10px;letter-spacing:.16em;color:var(--muted)}.stat-value{font-size:28px;font-weight:800;letter-spacing:-.04em;margin-top:10px}.cyan{color:var(--cyan)}.positive{color:#55f2a1}.sub{font-size:11px;color:var(--muted);margin-top:6px}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding:20px 20px 16px;border-bottom:1px solid var(--border)}h2{font-size:20px;margin:6px 0 0;letter-spacing:-.03em}.panel-tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.pill{padding:6px 9px;border-radius:999px;border:1px solid var(--border);font-size:10px;color:var(--muted)}.pill.live{color:#75f2a8;border-color:rgba(117,242,168,.24);background:rgba(117,242,168,.06)}.ghost{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#dbe2f0;padding:9px 12px;border-radius:8px}.ghost:hover{background:rgba(255,255,255,.07)}
+.filterbar{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap}.seg{display:flex;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;overflow:hidden}.seg button{border:0;background:transparent;color:var(--muted);padding:9px 12px;font-size:12px}.seg button.active{background:rgba(113,50,245,.18);color:#fff}.select,.search{background:#0f1017;border:1px solid var(--border);color:#e8edf7;padding:9px 11px;border-radius:8px;font-size:12px}.search{min-width:220px;outline:none}.search:focus,.select:focus{border-color:rgba(113,50,245,.65)}
+.offer-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:18px}.offer{padding:16px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(180deg,rgba(31,31,46,.52),rgba(20,20,29,.42));transition:.18s ease}.offer:hover{border-color:rgba(113,50,245,.35);transform:translateY(-1px)}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px;color:#fff;background:linear-gradient(135deg,#7132f5,#18b7ff);box-shadow:0 0 20px rgba(113,50,245,.22)}.avatar.sm{width:28px;height:28px;font-size:10px}.trader{display:flex;gap:11px;align-items:center}.trader strong{font-size:13px}.handle{font-size:10px;color:var(--muted);margin-top:3px}.verified{display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border-radius:999px;font-size:9px;color:#9ddfff;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);margin-left:6px}.presence{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:5px}.offer-rate{font-size:24px;font-weight:800;letter-spacing:-.04em;margin:16px 0 3px}.rate-unit{font-size:11px;color:var(--muted)}.offer-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 0}.metric{padding:9px;border-radius:8px;background:rgba(255,255,255,.025);border:1px solid var(--border)}.metric small{display:block;font-size:9px;color:var(--muted);letter-spacing:.12em}.metric strong{display:block;font-size:11px;margin-top:5px}.offer-actions{display:flex;justify-content:space-between;gap:8px;align-items:center}.primary{border:1px solid rgba(113,50,245,.45);background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;padding:10px 14px;border-radius:8px;box-shadow:0 0 22px rgba(113,50,245,.18)}.primary:hover{filter:brightness(1.08)}.link-btn{border:0;background:transparent;color:#b9a7ff;padding:7px 0;font-size:11px}
+.arb-panel{padding:20px}.arb-flow{display:grid;grid-template-columns:1fr 42px 1fr;align-items:center;gap:9px;margin:18px 0}.side-box{padding:14px;border:1px solid var(--border);background:rgba(255,255,255,.025);border-radius:10px}.side-label{font-size:9px;letter-spacing:.15em;color:var(--muted)}.side-rate{font-size:20px;font-weight:800;margin-top:8px}.side-name{font-size:11px;margin-top:5px}.arrow{color:#9279ff;text-align:center}.calc{border-top:1px solid var(--border);padding-top:14px}.calc-row{display:flex;justify-content:space-between;padding:7px 0;font-size:11px;color:var(--muted)}.calc-row strong{color:#fff}.calc-row.net{margin-top:4px;padding-top:12px;border-top:1px dashed var(--border);font-size:13px}.calc-row.net strong{color:var(--cyan);font-size:17px}.arb-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.table-wrap{overflow:auto}.market-table{width:100%;border-collapse:collapse;min-width:1020px}.market-table th{font-size:9px;letter-spacing:.14em;color:#7d8796;text-align:left;padding:13px 18px;border-bottom:1px solid var(--border)}.market-table td{padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.045);font-size:12px}.market-table tr:hover td{background:rgba(255,255,255,.02)}.tag{display:inline-flex;padding:4px 6px;border-radius:999px;font-size:9px;border:1px solid var(--border);color:var(--muted)}.profit{color:#62f1b0}.danger{color:var(--red)}.bar{height:5px;width:86px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden}.bar span{height:100%;display:block;background:linear-gradient(90deg,var(--purple),var(--cyan))}
+.profile-box{display:flex;gap:14px;align-items:flex-start}.profile-box .avatar{width:54px;height:54px}.bio{font-size:11px;color:#bbc4d0;line-height:1.5;margin-top:8px}.stats-line{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted);margin-top:8px}.profile-actions{display:flex;gap:8px;margin-top:12px}.chip{font-size:9px;padding:4px 7px;border:1px solid var(--border);border-radius:999px;color:#b6bfcc}
+.feed{height:340px;background:#000;border:1px solid #151515;border-radius:10px;padding:12px;overflow:auto;font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}.feed-line{display:flex;gap:10px;font-size:10px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.04);animation:fade .35s ease}.feed-time{color:#4e545e}.feed-tag{color:#00ff41}.feed-message{color:#6dff86}.feed-message.warn{color:#ffd166}.feed-message.info{color:#86d4ff}@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.chat-list{display:flex;flex-direction:column;gap:10px}.chat-row{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid transparent;border-radius:9px}.chat-row:hover{background:rgba(255,255,255,.03);border-color:var(--border)}.chat-preview{min-width:0;flex:1}.chat-preview strong{font-size:11px}.chat-preview div{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dot-count{font-size:9px;padding:4px 6px;border-radius:999px;background:rgba(0,212,255,.12);color:#7deaff}
+.footer-note{margin-top:18px;color:#677080;font-size:10px;line-height:1.6;padding:0 2px 20px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.68);backdrop-filter:blur(8px);display:grid;place-items:center;z-index:100;padding:18px}.modal{width:min(720px,100%);max-height:90vh;overflow:auto;background:#12121b;border:1px solid var(--border);border-radius:16px;box-shadow:0 30px 90px rgba(0,0,0,.65)}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--border)}.modal-body{padding:18px}.close{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:#cdd5e0}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;font-size:9px;letter-spacing:.14em;color:var(--muted);margin-bottom:6px}.field input,.field select{width:100%;background:#0c0d13;border:1px solid var(--border);color:#fff;padding:11px;border-radius:8px}.big-number{font-size:28px;font-weight:800;letter-spacing:-.04em}.address{padding:12px;border:1px dashed rgba(0,212,255,.22);background:rgba(0,212,255,.03);border-radius:9px;font-family:ui-monospace,monospace;font-size:11px;word-break:break-all}.copy-btn{border:1px solid var(--border);background:rgba(255,255,255,.04);color:#d9e0eb;padding:8px 10px;border-radius:7px;font-size:10px}.timer{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:30px;color:#fff;text-align:center;padding:14px;background:#0a0a0f;border-radius:10px;border:1px solid var(--border)}.status-track{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.track-step{padding:9px;border:1px solid var(--border);border-radius:8px;text-align:center;font-size:9px;color:#7e8795}.track-step.active{border-color:rgba(0,212,255,.28);color:#8eeeff;background:rgba(0,212,255,.04)}.message-list{height:320px;overflow:auto;display:flex;flex-direction:column;gap:9px;padding:4px}.bubble{max-width:78%;padding:10px 11px;border-radius:10px;font-size:11px;line-height:1.45}.bubble.me{margin-left:auto;background:linear-gradient(135deg,rgba(113,50,245,.5),rgba(91,30,207,.35));border:1px solid rgba(113,50,245,.32)}.bubble.them{background:rgba(255,255,255,.045);border:1px solid var(--border)}.chat-compose{display:flex;gap:8px;margin-top:10px}.chat-compose input{flex:1}.wallet-assignment{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.wallet-assignment input{width:100%}
+@media (max-width:1100px){.nav{display:none}.brand{min-width:auto}.span8,.span7,.span5{grid-column:span 12}.span4,.span3{grid-column:span 6}.offer-list{grid-template-columns:1fr}}
+@media (max-width:700px){.shell{padding:16px}.topbar{height:68px}.brand-copy strong{font-size:14px}.version{display:none}.wallet-btn{padding:10px 11px}.hero{padding-top:14px}.hero-copy{padding:20px 0 8px}.hero p{font-size:13px}.section-head{padding:16px}.filterbar{padding:12px 16px}.search{min-width:0;flex:1}.offer-list{padding:14px}.offer-rate{font-size:22px}.table-wrap{margin:0 -1px;padding-bottom:3px}.market-table{min-width:920px}.card,.offer{border-radius:12px}.modal-backdrop{padding:10px}.modal{max-height:94vh;border-radius:14px}.modal-head{padding:14px}.modal-body{padding:14px}.chat-compose .primary{padding-inline:12px}.timer{font-size:27px}.topbar{padding:0 16px}.span4,.span3,.span6,.span2{grid-column:span 12}.hero h1{font-size:42px}.offer-metrics{grid-template-columns:1fr 1fr}.form-row{grid-template-columns:1fr}.status-track{grid-template-columns:1fr 1fr}.wallet-btn span:last-child{display:none}.arb-flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#dashboard">
+    <span class="brand-mark"><span></span><span></span><span></span></span>
+    <span class="brand-copy"><strong>NEXUS</strong><small>ARBITRAGE</small></span>
+    <span class="version">v3.1.0</span>
+  </a>
+  <nav class="nav">
+    <a href="#dashboard" class="active">Dashboard</a>
+    <a href="#market">P2P Market</a>
+    <a href="#arbitrage">Arbitrage</a>
+    <a href="#orders">Orders</a>
+    <a href="#activity">Activity</a>
+  </nav>
+  <button class="wallet-btn" id="walletBtn"><span class="status-dot online"></span><span id="walletText">Connect Wallet</span></button>
+</header>
+<main class="shell" id="dashboard">
+  <section class="hero grid12">
+    <div class="hero-copy span8">
+      <div class="eyebrow"><span class="live-pulse"></span> NEURA AI · P2P ARBITRAGE ENGINE ONLINE</div>
+      <h1>Find the spread.<br><em>Trade the difference manually.</em></h1>
+      <p>NEXUS combines a premium P2P marketplace, trader profiles, live presence, private order chat, timed orders and execution-aware arbitrage calculations — designed for crypto-to-crypto markets.</p>
+    </div>
+    <div class="card core-card span4">
+      <div class="row"><strong class="core-title">NEURA CORE</strong><span class="core-status">● READY</span></div>
+      <div class="row" style="margin-top:16px"><div><div class="micro">OFFERS SCANNED</div><strong style="font-size:24px" id="scanRate">1,284</strong></div><div><div class="micro">BEST NET ROI</div><strong class="cyan" style="font-size:24px" id="bestROI">2.18%</strong></div></div>
+      <div class="progress"><span id="scanProgress"></span></div>
+      <div class="micro">P2P route graph synchronized · manual execution mode</div>
+    </div>
+  </section>
+
+  <section class="grid12 stats">
+    <article class="card span3"><div class="stat-label">P2P VOLUME 24H</div><div class="stat-value">$842,610</div><div class="sub positive">+8.42% today</div></article>
+    <article class="card span3"><div class="stat-label">ARBITRAGE OPPORTUNITIES</div><div class="stat-value cyan" id="arbCount">24</div><div class="sub">7 currently actionable</div></article>
+    <article class="card span3"><div class="stat-label">AVG. NET SPREAD</div><div class="stat-value">1.14%</div><div class="sub">After estimated costs</div></article>
+    <article class="card span3"><div class="stat-label">ACTIVE ORDERS</div><div class="stat-value" id="activeOrders">3</div><div class="sub">Escrow timer active</div></article>
+  </section>
+
+  <section class="card span12" id="market" style="margin-top:20px">
+    <div class="section-head"><div><div class="kicker">P2P MARKETPLACE</div><h2>Buy & Sell Offers</h2></div><div class="panel-tools"><span class="pill live">● LIVE</span><button class="ghost" id="refreshBtn">Refresh rates</button></div></div>
+    <div class="filterbar">
+      <div class="seg" id="sideSeg"><button class="active" data-side="buy">Buy</button><button data-side="sell">Sell</button></div>
+      <select class="select" id="assetFilter"></select>
+      <select class="select" id="networkFilter"></select>
+      <input class="search" id="searchInput" placeholder="Search trader or asset…">
+    </div>
+    <div class="offer-list" id="offerList"></div>
+  </section>
+
+  <section class="grid12" id="arbitrage" style="margin-top:20px">
+    <article class="card span7">
+      <div class="section-head"><div><div class="kicker">NEURA INTELLIGENCE</div><h2>Live Arbitrage Opportunities</h2></div><span class="pill">NET AFTER COSTS</span></div>
+      <div class="table-wrap"><table class="market-table"><thead><tr><th>PAIR</th><th>BUY FROM</th><th>SELL TO</th><th>BUY RATE</th><th>SELL RATE</th><th>NET SPREAD</th><th>LIQ.</th><th></th></tr></thead><tbody id="arbRows"></tbody></table></div>
+    </article>
+    <article class="card span5 arb-panel">
+      <div class="kicker">SELECTED ROUTE</div><h2>Manual Arbitrage Calculator</h2>
+      <p class="micro" style="line-height:1.6">Enter the amount you want to use. NEXUS estimates the result from the selected buy and sell offers.</p>
+      <div class="arb-flow"><div class="side-box"><div class="side-label">BUY FROM</div><div class="side-rate" id="calcBuyRate">0.997</div><div class="side-name" id="calcBuyName">Alex Trades ✓</div></div><div class="arrow">→</div><div class="side-box"><div class="side-label">SELL TO</div><div class="side-rate" id="calcSellRate">1.008</div><div class="side-name" id="calcSellName">David OTC ✓</div></div></div>
+      <div class="field"><label>CAPITAL</label><input id="capitalInput" type="number" value="1000" min="1" step="1"></div>
+      <div class="calc"><div class="calc-row"><span>Buy cost</span><strong id="buyCost">997.00 USDC</strong></div><div class="calc-row"><span>Gross return</span><strong id="grossReturn">1,008.00 USDC</strong></div><div class="calc-row"><span>Estimated trading + network costs</span><strong id="costs">−2.15 USDC</strong></div><div class="calc-row net"><span>Estimated NET PROFIT</span><strong id="netProfit">+8.85 USDC</strong></div><div class="calc-row"><span>NET ROI</span><strong class="cyan" id="netROI">0.89%</strong></div></div>
+      <div class="arb-actions"><button class="primary" id="viewRouteBtn">View buy & sell details</button><button class="ghost" id="simulateBtn">Simulate calculation</button></div>
+    </article>
+  </section>
+
+  <section class="grid12" id="orders" style="margin-top:20px">
+    <article class="card span8">
+      <div class="section-head"><div><div class="kicker">P2P ORDER FLOW</div><h2>Active Orders</h2></div><span class="pill">TIMED</span></div>
+      <div id="orderList" style="padding:18px;display:grid;gap:12px"></div>
+    </article>
+    <article class="card span4">
+      <div class="section-head"><div><div class="kicker">COMMUNITY</div><h2>Trader Chats</h2></div><span class="pill live">PRESENCE</span></div>
+      <div class="chat-list" id="chatList" style="padding:10px 14px 16px"></div>
+    </article>
+  </section>
+
+  <section class="grid12" id="activity" style="margin-top:20px">
+    <article class="card span7"><div class="section-head"><div><div class="kicker">EXECUTION STREAM</div><h2>Live Transaction Feed</h2></div><button class="ghost" id="clearFeedBtn">Clear</button></div><div class="feed" id="feed"></div></article>
+    <article class="card span5"><div class="section-head"><div><div class="kicker">TRADER PROFILE</div><h2>Featured Merchant</h2></div></div><div class="pad" id="featuredProfile"></div></article>
+  </section>
+
+  <p class="footer-note">NEXUS P2P is configured here for manual execution. Trader names, avatars, profile icons, ratings, presence, messages, order timers and wallet addresses are UI/data placeholders ready for your GitHub assets/backend later. This GitHub build uses a browser-only escrow simulation with localStorage. Real escrow custody, payment verification, blockchain monitoring, identity verification and dispute resolution are not implemented.</p>
+</main>
+
+<div class="modal-backdrop hidden" id="modalBackdrop"><div class="modal" id="modal"></div></div>
+<div id="toast" style="position:fixed;right:18px;bottom:18px;z-index:200;min-width:260px;padding:12px 14px;border:1px solid var(--border);background:rgba(15,15,22,.96);border-radius:10px;box-shadow:var(--shadow);transform:translateY(20px);opacity:0;pointer-events:none;transition:.2s;color:#fff;font-size:11px"></div>
+
+<script>
+
+// GitHub Pages / frontend-only escrow simulation. No server, API, or secret keys required.
+const STORAGE_KEY='nexus_p2p_escrow_v1';
+let localEscrowState=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||{orders:{},locked:{}}}catch(e){return {orders:{},locked:{}}}})();
+function persistEscrow(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(localEscrowState))}catch(e){}}
+function nextOrderId(){return 'NX-'+Math.floor(10000+Math.random()*90000)}
+async function escrowCreate(offerId, amount){
+  const o=offers.find(x=>x.id===Number(offerId));
+  if(!o) throw new Error('Offer no longer exists.');
+  const amt=Number(amount);
+  if(!Number.isFinite(amt)||amt<o.min||amt>o.max||amt>o.available) throw new Error('Amount is outside the available offer limits.');
+  const locked=(localEscrowState.locked[offerId]||0)+amt;
+  if(locked>o.available) throw new Error('Offer inventory is already reserved by another simulated order.');
+  const id=nextOrderId();
+  const order={id,offerId:Number(offerId),side:o.side==='sell'?'buy':'sell',asset:o.asset,quote:o.quote,network:o.network,trader:o.trader,amount:amt,rate:o.rate,status:'escrow_locked',createdAt:Date.now(),expiresAt:Date.now()+15*60*1000};
+  localEscrowState.orders[id]=order; localEscrowState.locked[offerId]=locked; persistEscrow();
+  return {ok:true,order};
+}
+async function escrowAction(orderId, action){
+  const order=localEscrowState.orders[orderId];
+  if(!order) throw new Error('Order not found.');
+  if(order.status==='escrow_locked' && Date.now()>=order.expiresAt){
+    order.status='cancelled'; order.cancelReason='expired';
+    localEscrowState.locked[order.offerId]=Math.max(0,(localEscrowState.locked[order.offerId]||0)-order.amount); persistEscrow();
+  }
+  if(action==='paid'){
+    if(order.status!=='escrow_locked') throw new Error('Order is no longer awaiting payment.');
+    order.status='payment_marked'; order.paidAt=Date.now();
+  }else if(action==='release'){
+    if(order.status!=='payment_marked') throw new Error('Payment must be marked before release.');
+    order.status='completed'; order.releasedAt=Date.now();
+    localEscrowState.locked[order.offerId]=Math.max(0,(localEscrowState.locked[order.offerId]||0)-order.amount);
+  }else if(action==='cancel'){
+    if(['completed','cancelled'].includes(order.status)) throw new Error('Order is already closed.');
+    order.status='cancelled'; order.cancelledAt=Date.now();
+    localEscrowState.locked[order.offerId]=Math.max(0,(localEscrowState.locked[order.offerId]||0)-order.amount);
+  }else throw new Error('Unsupported escrow action.');
+  persistEscrow();
+  return {ok:true,order};
+}
+function expireLocalEscrow(){
+  let changed=false; const now=Date.now();
+  Object.values(localEscrowState.orders).forEach(order=>{
+    if(order.status==='escrow_locked' && now>=order.expiresAt){order.status='cancelled';order.cancelReason='expired';localEscrowState.locked[order.offerId]=Math.max(0,(localEscrowState.locked[order.offerId]||0)-order.amount);changed=true;}
+  });
+  if(changed) persistEscrow();
+}
+expireLocalEscrow();
+
+const ASSETS=[
+  {code:'USDT',name:'Tether',icon:'₮'},
+  {code:'USDC',name:'USD Coin',icon:'◉'},
+  {code:'SOL',name:'Solana',icon:'◎'},
+  {code:'BTC',name:'Bitcoin',icon:'₿'},
+  {code:'ETH',name:'Ethereum',icon:'Ξ'},
+  {code:'WBTC',name:'Wrapped Bitcoin',icon:'₿'},
+  {code:'JUP',name:'Jupiter',icon:'J'},
+  {code:'BONK',name:'Bonk',icon:'B'}
+];
+const NETWORKS=['Solana','Ethereum','Base'];
+const traders={
+ alex:{name:'Alex Trades',handle:'@alextrades',initials:'AT',verified:true,rating:4.98,completion:98.7,orders:1284,bio:'Fast crypto-to-crypto settlements. Focused on USDT, USDC and SOL.',status:'online',release:'< 2 min'},
+ mike:{name:'Mike P2P',handle:'@mikep2p',initials:'MP',verified:false,rating:4.76,completion:96.2,orders:834,bio:'USDT / SOL trader. Active most hours of the day.',status:'online',release:'< 4 min'},
+ sarah:{name:'Sarah Crypto',handle:'@sarahcrypto',initials:'SC',verified:true,rating:4.99,completion:99.4,orders:2441,bio:'High-liquidity crypto merchant with quick release times.',status:'away',release:'< 3 min'},
+ john:{name:'John Exchange',handle:'@johnx',initials:'JE',verified:false,rating:4.81,completion:91.8,orders:442,bio:'Independent trader. Trading USDT, USDC and ETH pairs.',status:'online',release:'< 5 min'},
+ david:{name:'David OTC',handle:'@davidotc',initials:'DO',verified:true,rating:4.97,completion:99.1,orders:1890,bio:'OTC-focused trader. Stablecoin liquidity and larger tickets.',status:'online',release:'< 2 min'},
+ nina:{name:'Nina Labs',handle:'@ninalabs',initials:'NL',verified:false,rating:4.68,completion:94.6,orders:621,bio:'Solana ecosystem trader. JUP, SOL and BONK markets.',status:'offline',release:'< 6 min'}
+};
+const offers=[
+ {id:1,side:'sell',asset:'USDT',quote:'USDC',network:'Solana',trader:'alex',rate:0.998,available:5000,min:25,max:2500,payment:'Wallet transfer'},
+ {id:2,side:'sell',asset:'USDT',quote:'USDC',network:'Solana',trader:'mike',rate:0.9965,available:1200,min:20,max:700,payment:'Wallet transfer'},
+ {id:3,side:'sell',asset:'USDT',quote:'USDC',network:'Solana',trader:'sarah',rate:0.999,available:7000,min:50,max:5000,payment:'Wallet transfer'},
+ {id:4,side:'sell',asset:'SOL',quote:'USDC',network:'Solana',trader:'nina',rate:181.42,available:120,min:0.5,max:60,payment:'Wallet transfer'},
+ {id:5,side:'sell',asset:'BTC',quote:'USDT',network:'Solana',trader:'alex',rate:113420,available:0.8,min:0.001,max:0.4,payment:'Wallet transfer'},
+ {id:6,side:'sell',asset:'ETH',quote:'USDT',network:'Ethereum',trader:'john',rate:4216,available:22,min:0.01,max:10,payment:'Wallet transfer'},
+ {id:7,side:'buy',asset:'USDT',quote:'USDC',network:'Solana',trader:'david',rate:1.008,available:4000,min:25,max:3000,payment:'Wallet transfer'},
+ {id:8,side:'buy',asset:'USDT',quote:'USDC',network:'Solana',trader:'john',rate:1.0062,available:1800,min:25,max:900,payment:'Wallet transfer'},
+ {id:9,side:'buy',asset:'USDT',quote:'USDC',network:'Solana',trader:'sarah',rate:1.0048,available:6500,min:50,max:5000,payment:'Wallet transfer'},
+ {id:10,side:'buy',asset:'SOL',quote:'USDC',network:'Solana',trader:'david',rate:184.78,available:100,min:0.5,max:50,payment:'Wallet transfer'},
+ {id:11,side:'buy',asset:'BTC',quote:'USDT',network:'Solana',trader:'mike',rate:114360,available:0.5,min:0.001,max:0.25,payment:'Wallet transfer'},
+ {id:12,side:'buy',asset:'ETH',quote:'USDT',network:'Ethereum',trader:'sarah',rate:4290,available:18,min:0.01,max:8,payment:'Wallet transfer'}
+];
+const wallets={alex:'7xKf...ALEX9ab',mike:'9Qp2...MIKE4cd',sarah:'6vRt...SARH81e',john:'4nZs...JOHN77x',david:'2fYh...DAVD52q',nina:'8bLm...NINA91c'};
+let side='buy', selectedAsset='ALL', selectedNetwork='ALL', search='', selectedArb=0, feedTimer, chatTrader='alex', modalTimer, orderState={};
+const $=id=>document.getElementById(id);
+const fmt=(n,d=2)=>new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).format(n);
+function traderCard(tid){const t=traders[tid];return `<div class="trader"><div class="avatar" data-avatar-placeholder="${tid}" title="Avatar placeholder — replace with your GitHub asset">${t.initials}</div><div><div><strong>${t.name}</strong>${t.verified?'<span class="verified">✓ VERIFIED</span>':''}</div><div class="handle">${t.handle}</div></div></div>`}
+function presence(t){const labels={online:'Online',away:'Away',offline:'Offline'};return `<span class="presence"><span class="status-dot ${t.status}"></span>${labels[t.status]}</span>`}
+function offerCard(o){const t=traders[o.trader];const action=o.side==='sell'?'BUY':'SELL';return `<article class="offer"><div class="row"><div>${traderCard(o.trader)}</div>${presence(t)}</div><div class="offer-rate">${o.rate>=100?fmt(o.rate):o.rate.toFixed(4)} <span class="rate-unit">${o.quote} / ${o.asset}</span></div><div class="offer-metrics"><div class="metric"><small>AVAILABLE</small><strong>${fmt(o.available, o.asset==='SOL'?2: o.asset==='BTC'?3:2)} ${o.asset}</strong></div><div class="metric"><small>LIMITS</small><strong>${fmt(o.min)}–${fmt(o.max)}</strong></div><div class="metric"><small>PAYMENT</small><strong>${o.payment}</strong></div></div><div class="offer-actions"><button class="link-btn profile-btn" data-trader="${o.trader}">View profile</button><div style="display:flex;gap:7px"><button class="ghost chat-btn" data-trader="${o.trader}">Chat</button><button class="primary order-btn" data-id="${o.id}">${action} ${o.asset}</button></div></div></article>`}
+function renderOffers(){const arr=offers.filter(o=>o.side===(side==='buy'?'sell':'buy')&&(selectedAsset==='ALL'||o.asset===selectedAsset)&&(selectedNetwork==='ALL'||o.network===selectedNetwork)&&(traders[o.trader].name.toLowerCase().includes(search.toLowerCase())||o.asset.toLowerCase().includes(search.toLowerCase())));$('offerList').innerHTML=arr.length?arr.map(offerCard).join(''):`<div style="grid-column:1/-1;padding:30px;color:var(--muted);text-align:center">No matching offers.</div>`;bindDynamic();}
+function renderFilters(){ $('assetFilter').innerHTML='<option>ALL</option>'+ASSETS.map(a=>`<option value="${a.code}">${a.code} — ${a.name}</option>`).join('');$('networkFilter').innerHTML='<option>ALL</option>'+NETWORKS.map(n=>`<option>${n}</option>`).join('');}
+function arbOpportunities(){
+ const sells=offers.filter(o=>o.side==='sell'); const buys=offers.filter(o=>o.side==='buy'); const out=[];
+ for(const s of sells){const b=buys.find(x=>x.asset===s.asset&&x.quote===s.quote&&x.network===s.network);if(!b)continue;const costs=Math.max(0.45,Math.min(3.4,(s.rate+b.rate)*0.0015));const edge=(b.rate-s.rate);const base=s.asset==='USDT'?1000:s.asset==='SOL'?1000/s.rate:s.asset==='BTC'?0.01:s.asset==='ETH'?0.25:100;const gross=edge*base;const net=gross-costs;out.push({s,b,edgePct:(b.rate/s.rate-1)*100,net,base,costs,liq:Math.min(99,Math.round((Math.min(s.available,b.available)/(Math.max(1,base)))*100)),roi:(net/(s.rate*base))*100});}
+ return out.sort((a,b)=>b.roi-a.roi);
+}
+function renderArbs(){const data=arbOpportunities();$('arbCount').textContent=data.length+14;$('bestROI').textContent=(data[0]?.roi||0).toFixed(2)+'%';$('arbRows').innerHTML=data.map((x,i)=>`<tr><td><strong>${x.s.asset}/${x.s.quote}</strong><div class="micro">${x.s.network}</div></td><td>${traders[x.s.trader].name}${traders[x.s.trader].verified?' ✓':''}</td><td>${traders[x.b.trader].name}${traders[x.b.trader].verified?' ✓':''}</td><td>${fmt(x.s.rate, x.s.rate>=100?2:4)}</td><td>${fmt(x.b.rate, x.b.rate>=100?2:4)}</td><td class="profit">+${x.roi.toFixed(2)}%</td><td><div class="bar"><span style="width:${Math.max(20,x.liq)}%"></span></div></td><td><button class="ghost arb-select" data-index="${i}">Preview</button></td></tr>`).join('');$('viewRouteBtn').onclick=()=>openArbDetails(data[selectedArb]||data[0]);$('simulateBtn').onclick=()=>showToast('Calculation simulated using current offers and estimated network costs.');bindDynamic();updateCalc(data[0]);}
+function updateCalc(x){if(!x)return;const s=x.s,b=x.b;$('calcBuyRate').textContent=s.rate>=100?fmt(s.rate,2):s.rate.toFixed(4);$('calcSellRate').textContent=b.rate>=100?fmt(b.rate,2):b.rate.toFixed(4);$('calcBuyName').textContent=traders[s.trader].name+(traders[s.trader].verified?' ✓':'');$('calcSellName').textContent=traders[b.trader].name+(traders[b.trader].verified?' ✓':'');calcAmount(x);}
+function calcAmount(x){if(!x)return;const cap=Math.max(1,Number($('capitalInput').value)||1);const buyCost=cap;const gross=cap*(1+x.edgePct/100);const costs=x.costs;const net=gross-buyCost-costs;$('buyCost').textContent=fmt(buyCost)+' '+x.s.quote;$('grossReturn').textContent=fmt(gross)+' '+x.s.quote;$('costs').textContent='−'+fmt(costs)+' '+x.s.quote;$('netProfit').textContent='+'+fmt(net)+' '+x.s.quote;$('netROI').textContent=(net/cap*100).toFixed(2)+'%';}
+function openModal(html){$('modal').innerHTML=html;$('modalBackdrop').classList.remove('hidden');clearInterval(modalTimer)}
+function closeModal(){clearInterval(modalTimer);$('modalBackdrop').classList.add('hidden');$('modal').innerHTML=''}
+async function orderFromOffer(id, existingOrder=null){
+ const o=offers.find(x=>x.id===id); if(!o)return; const t=traders[o.trader]; const action=o.side==='sell'?'BUY':'SELL'; const wallet=wallets[o.trader];
+ const defaultAmount=Math.min(o.available,Math.max(o.min,10));
+ let order=existingOrder;
+ if(!order){
+   try{
+     const created=await escrowCreate(o.id,defaultAmount); order=created.order; showToast('Simulated escrow locked the offer inventory.');
+   }catch(err){
+     showToast(err.message||'Unable to create order.');
+     return;
+   }
+ }
+ let remaining=Math.max(0,Math.ceil((order.expiresAt-Date.now())/1000));
+ orderState[order.id]=order;
+ const renderOrderModal=()=>openModal(`<div class="modal-head"><div><div class="kicker">P2P ORDER · ESCROW SIM</div><h2>${action} ${o.asset}</h2><div class="micro">${order.id} · ${o.network}</div></div><button class="close" id="closeModal">×</button></div><div class="modal-body"><div class="profile-box">${traderCard(o.trader)}<div style="margin-left:auto;text-align:right">${presence(t)}<div class="micro" style="margin-top:6px">${t.completion}% completion</div></div></div><div class="grid12" style="margin-top:16px"><div class="span6"><div class="field"><label>RATE</label><div class="big-number">${o.rate>=100?fmt(o.rate,2):o.rate.toFixed(4)} <span style="font-size:12px;color:var(--muted)">${o.quote}/${o.asset}</span></div></div></div><div class="span6"><div class="field"><label>AMOUNT (${o.asset})</label><input id="orderAmount" type="number" value="${order.amount}" min="${o.min}" max="${Math.min(o.max,o.available+order.amount)}" step="0.01" disabled></div></div></div><div style="margin-top:14px"><div class="field"><label>ASSIGNED ${action==='BUY'?'SELLER':'BUYER'} WALLET</label><div class="wallet-assignment"><div class="address" id="orderWallet">${wallet}</div><button class="copy-btn" id="copyWallet">Copy</button></div></div></div><div style="margin-top:14px"><div class="field"><label>ESCROW TIMER</label><div class="timer" id="orderTimer">${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}</div></div></div><div class="status-track"><div class="track-step ${order.status!=='cancelled'?'active':''}">ORDER CREATED</div><div class="track-step ${['payment_marked','completed'].includes(order.status)?'active':''}">PAYMENT</div><div class="track-step ${order.status==='completed'?'active':''}">ASSET RELEASE</div><div class="track-step ${order.status==='completed'?'active':''}">COMPLETE</div></div><div class="row" style="margin-top:10px"><div class="micro">🔒 ${order.status==='escrow_locked'?'Assets are locked in simulated escrow.':'Escrow status: '+order.status}</div>${order.status==='escrow_locked'?'<button class="primary" id="markPaid">I HAVE PAID</button>':order.status==='payment_marked'?'<button class="primary" id="releaseAsset">RELEASE ASSET</button>':'<span class="tag">COMPLETED</span>'}</div><div class="row" style="margin-top:10px"><button class="ghost" id="openOrderChat">Open chat</button>${!['completed','cancelled'].includes(order.status)?'<button class="ghost" id="cancelOrder">Cancel order</button>':''}</div></div>`);
+ $('closeModal').onclick=closeModal;
+ $('copyWallet').onclick=()=>navigator.clipboard?.writeText(wallet).then(()=>showToast('Wallet address copied.')).catch(()=>showToast('Copy the wallet address manually.'));
+ $('openOrderChat').onclick=()=>openChat(o.trader);
+ if($('cancelOrder'))$('cancelOrder').onclick=async()=>{try{const r=await escrowAction(order.id,'cancel');order=r.order;showToast('Escrow simulation unlocked the asset.');closeModal();renderOffers();renderOrders()}catch(e){showToast(e.message)}};
+ if($('markPaid'))$('markPaid').onclick=async()=>{try{const r=await escrowAction(order.id,'paid');order=r.order;remaining=Math.max(0,Math.ceil((order.expiresAt-Date.now())/1000));renderOrderModal();showToast('Payment marked. Escrow remains locked pending release.')}catch(e){showToast(e.message)}};
+ if($('releaseAsset'))$('releaseAsset').onclick=async()=>{try{const r=await escrowAction(order.id,'release');order=r.order;renderOrderModal();showToast('Escrow simulation released the asset.')}catch(e){showToast(e.message)}};
+ clearInterval(modalTimer);
+ modalTimer=setInterval(()=>{remaining=Math.max(0,Math.ceil((order.expiresAt-Date.now())/1000));if($('orderTimer'))$('orderTimer').textContent=`${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;if(remaining<=0){clearInterval(modalTimer);expireLocalEscrow(); if(order.status==='escrow_locked'){order.status='cancelled'; renderOrderModal();} showToast('Order expired. Simulated escrow inventory was unlocked.');}},1000);
+ renderOrderModal();
+}
+function openChat(tid){const t=traders[tid];if(!t)return;if(t.status==='offline'){showToast(`${t.name} is offline. Chat will be available when they return.`);return;}chatTrader=tid;openModal(`<div class="modal-head"><div>${traderCard(t)}<div class="micro" style="margin-top:4px">Private P2P chat · ${presence(t)}</div></div><button class="close" id="closeModal">×</button></div><div class="modal-body"><div class="message-list" id="messageList"><div class="bubble them">Hi — I'm available for the ${Object.keys(offers.find(o=>o.trader===tid)||{asset:'USDT'}).length? 'trade':''}. Let me know when you're ready.</div><div class="bubble me">I'm reviewing the rate now. Can we settle the order manually here?</div><div class="bubble them">Yes. Please keep all order details inside NEXUS chat.</div></div><div class="chat-compose"><input id="chatInput" placeholder="Type a message…"><button class="primary" id="sendChat">Send</button></div></div>`);$('closeModal').onclick=closeModal;$('sendChat').onclick=sendChat;$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat()});}
+function sendChat(){const v=$('chatInput').value.trim();if(!v)return;const list=$('messageList');const b=document.createElement('div');b.className='bubble me';b.textContent=v;list.appendChild(b);$('chatInput').value='';list.scrollTop=list.scrollHeight;setTimeout(()=>{const r=document.createElement('div');r.className='bubble them';r.textContent='Got it. I’ll confirm the order details from my side.';list.appendChild(r);list.scrollTop=list.scrollHeight},500)}
+function profileModal(tid){const t=traders[tid];openModal(`<div class="modal-head"><div><div class="kicker">TRADER PROFILE</div><h2>${t.name}</h2></div><button class="close" id="closeModal">×</button></div><div class="modal-body"><div class="profile-box"><div class="avatar">${t.initials}</div><div><div><strong>${t.handle}</strong>${t.verified?'<span class="verified">✓ VERIFIED</span>':''}</div><div style="margin-top:5px">${presence(t)}</div><div class="bio">${t.bio}</div></div></div><div class="stats-line"><span>★ ${t.rating}</span><span>${t.orders.toLocaleString()} orders</span><span>${t.completion}% completion</span><span>Avg. release ${t.release}</span></div><div class="profile-actions"><button class="primary" id="profileChat">Chat</button><button class="ghost" id="profileOffers">View offers</button></div></div>`);$('closeModal').onclick=closeModal;$('profileChat').onclick=()=>openChat(tid);$('profileOffers').onclick=()=>{closeModal();document.getElementById('searchInput').value=t.name;search=t.name;renderOffers();document.getElementById('market').scrollIntoView({behavior:'smooth'})};}
+function openArbDetails(x){if(!x)return;openModal(`<div class="modal-head"><div><div class="kicker">NEURA ROUTE</div><h2>${x.s.asset}/${x.s.quote} · ${x.s.network}</h2></div><button class="close" id="closeModal">×</button></div><div class="modal-body"><div class="grid12"><div class="span6 side-box"><div class="side-label">BUY FROM</div>${traderCard(x.s.trader)}<div class="side-rate" style="margin-top:12px">${x.s.rate>=100?fmt(x.s.rate,2):x.s.rate.toFixed(4)}</div><div class="micro">Available ${fmt(x.s.available)} ${x.s.asset}</div><div style="margin-top:10px"><button class="primary" id="buyDetails">View buy offer</button></div></div><div class="span6 side-box"><div class="side-label">SELL TO</div>${traderCard(x.b.trader)}<div class="side-rate" style="margin-top:12px">${x.b.rate>=100?fmt(x.b.rate,2):x.b.rate.toFixed(4)}</div><div class="micro">Available ${fmt(x.b.available)} ${x.s.asset}</div><div style="margin-top:10px"><button class="primary" id="sellDetails">View sell offer</button></div></div></div><div class="calc" style="margin-top:16px"><div class="calc-row"><span>Gross spread</span><strong>+${x.edgePct.toFixed(2)}%</strong></div><div class="calc-row"><span>Estimated costs</span><strong>−${fmt(x.costs)} ${x.s.quote}</strong></div><div class="calc-row net"><span>Estimated NET ROI</span><strong>${x.roi.toFixed(2)}%</strong></div></div><div class="row" style="margin-top:14px"><div class="micro">Manual execution. Verify counterparty and destination before sending funds.</div><button class="ghost" id="routeChat">Chat buyer/seller</button></div></div>`);$('closeModal').onclick=closeModal;$('buyDetails').onclick=()=>orderFromOffer(x.s.id);$('sellDetails').onclick=()=>orderFromOffer(x.b.id);$('routeChat').onclick=()=>openChat(x.s.trader);}
+function formatRemaining(ms){const total=Math.max(0,Math.ceil(ms/1000));const h=Math.floor(total/3600);const m=Math.floor((total%3600)/60);const sec=total%60;return h?`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
+function renderOrders(){
+ expireLocalEscrow();
+ const base=[
+  {id:'NX-48291',trader:'alex',asset:'USDT',amount:'328.95',rate:'0.998',status:'Payment pending',mins:9},
+  {id:'NX-48277',trader:'sarah',asset:'SOL',amount:'4.80',rate:'181.42',status:'Waiting release',mins:4},
+  {id:'NX-48256',trader:'david',asset:'USDC',amount:'750',rate:'1.008',status:'Buyer confirmed',mins:13}
+ ];
+ const simulated=Object.values(localEscrowState.orders).sort((a,b)=>b.createdAt-a.createdAt).map(o=>({id:o.id,trader:o.trader,asset:o.asset,amount:o.amount,rate:o.rate,status:o.status==='escrow_locked'?'Escrow locked':o.status==='payment_marked'?'Payment marked':o.status==='completed'?'Completed':'Cancelled',remaining:o.status==='completed'||o.status==='cancelled'?0:Math.max(0,o.expiresAt-Date.now())}));
+ const arr=[...simulated,...base];
+ $('activeOrders').textContent=simulated.filter(o=>!['Completed','Cancelled'].includes(o.status)).length;
+ $('orderList').innerHTML=arr.map(o=>`<div class="card pad" style="background:rgba(255,255,255,.02)"><div class="row"><div>${traderCard(o.trader)}</div><span class="tag">${o.status}</span></div><div class="row" style="margin-top:12px"><div><div class="micro">AMOUNT</div><strong>${o.amount} ${o.asset}</strong></div><div><div class="micro">RATE</div><strong>${o.rate}</strong></div><div><div class="micro">TIMER</div><strong class="cyan order-countdown" data-expires="${o.remaining?Date.now()+o.remaining:0}">${o.remaining?formatRemaining(o.remaining):'—'}</strong></div>${String(o.id).startsWith('NX-') && localEscrowState.orders[o.id]?`<button class="ghost order-open" data-id="${o.id}" data-trader="${o.trader}">Open order</button>`:'<button class="ghost order-chat" data-trader="'+o.trader+'">Chat</button>'}</div></div>`).join('');
+ document.querySelectorAll('.order-open').forEach(b=>b.onclick=()=>{const o=localEscrowState.orders[b.dataset.id];if(o) orderFromOffer(o.offerId,o)});
+ document.querySelectorAll('.order-chat').forEach(b=>b.onclick=()=>openChat(b.dataset.trader));
+}
+function renderChats(){const ids=['alex','sarah','david','mike','nina'];$('chatList').innerHTML=ids.map((id,i)=>{const t=traders[id];return `<button class="chat-row" style="width:100%;background:transparent;color:inherit;text-align:left" data-trader="${id}"><div class="avatar sm">${t.initials}</div><div class="chat-preview"><strong>${t.name}${t.verified?' ✓':''}</strong><div>Tap to open P2P chat · ${presence(t)}</div></div>${i<3?'<span class="dot-count">'+(i+1)+'</span>':''}</button>`}).join('');document.querySelectorAll('.chat-row').forEach(b=>b.onclick=()=>openChat(b.dataset.trader));}
+function featured(){const t=traders.david;$('featuredProfile').innerHTML=`<div class="profile-box"><div class="avatar">${t.initials}</div><div><div><strong>${t.name}</strong>${t.verified?'<span class="verified">✓ VERIFIED</span>':''}</div><div class="handle">${t.handle}</div><div style="margin-top:6px">${presence(t)}</div><div class="bio">${t.bio}</div><div class="stats-line"><span>★ ${t.rating}</span><span>${t.completion}% completion</span><span>${t.orders.toLocaleString()} orders</span></div></div></div><div class="profile-actions"><button class="primary" onclick="openChat('david')">Chat</button><button class="ghost" onclick="profileModal('david')">View profile</button></div>`;}
+function feedLine(tag,msg,tone=''){const f=$('feed');const d=document.createElement('div');d.className='feed-line';const tm=new Date().toLocaleTimeString('en-GB',{hour12:false});d.innerHTML=`<span class="feed-time">${tm}</span><span class="feed-tag">[${tag}]</span><span class="feed-message ${tone}">${msg}</span>`;f.prepend(d);while(f.children.length>35)f.lastChild.remove();}
+function seedFeed(){const msgs=[['SCAN','1,284 P2P offers synchronized','info'],['ROUTE','USDT/USDC spread confirmed · +1.06% gross'],['RISK','Counterparty completion and liquidity checks passed','warn'],['CHAT','Alex Trades is online · new message received',''],['ROUTE','SOL/USDC opportunity widened · +1.85% edge','info'],['ORDER','NX-48291 timer running · 09:14 remaining',''],['AI','NEURA score 96.8 · manual route eligible','info']];$('feed').innerHTML='';msgs.forEach((m,i)=>setTimeout(()=>feedLine(...m),i*70));}
+function showToast(msg){const t=$('toast');t.textContent=msg;t.style.opacity='1';t.style.transform='translateY(0)';clearTimeout(showToast.t);showToast.t=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(20px)'},2800)}
+function bindDynamic(){document.querySelectorAll('.profile-btn').forEach(b=>b.onclick=()=>profileModal(b.dataset.trader));document.querySelectorAll('.chat-btn').forEach(b=>b.onclick=()=>openChat(b.dataset.trader));document.querySelectorAll('.order-btn').forEach(b=>b.onclick=()=>orderFromOffer(Number(b.dataset.id)));document.querySelectorAll('.arb-select').forEach(b=>b.onclick=()=>{const d=arbOpportunities();selectedArb=Number(b.dataset.index);updateCalc(d[selectedArb]);openArbDetails(d[selectedArb])});}
+$('sideSeg').onclick=e=>{const b=e.target.closest('button');if(!b)return;document.querySelectorAll('#sideSeg button').forEach(x=>x.classList.remove('active'));b.classList.add('active');side=b.dataset.side;renderOffers()};$('assetFilter').onchange=e=>{selectedAsset=e.target.value;renderOffers()};$('networkFilter').onchange=e=>{selectedNetwork=e.target.value;renderOffers()};$('searchInput').oninput=e=>{search=e.target.value;renderOffers()};$('refreshBtn').onclick=()=>{offers.forEach(o=>o.rate*=1+((Math.random()-.5)*0.004));renderOffers();renderArbs();$('scanRate').textContent=(1200+Math.floor(Math.random()*240)).toLocaleString();feedLine('SCAN','Market rates refreshed · recalculated net spreads','info');showToast('P2P rates refreshed.')};$('capitalInput').oninput=()=>calcAmount(arbOpportunities()[selectedArb]||arbOpportunities()[0]);$('clearFeedBtn').onclick=()=>{ $('feed').innerHTML='';showToast('Transaction feed cleared.')};$('walletBtn').onclick=()=>{const connected=$('walletText').textContent!=='Connect Wallet';$('walletText').textContent=connected?'Connect Wallet':'7xKf…9ab';showToast(connected?'Wallet disconnected.':'Wallet session connected. Manual mode ready.');feedLine('WALLET',connected?'Wallet disconnected':'Wallet connected · manual trading mode','info')};
+$('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal()});
+
+function updateOrderCountdowns(){expireLocalEscrow();document.querySelectorAll('.order-countdown').forEach(el=>{const exp=Number(el.dataset.expires||0);if(!exp)return;const left=Math.max(0,exp-Date.now());el.textContent=left?formatRemaining(left):'EXPIRED';if(!left)renderOrders();});}
+function simulatePresence(){const onlineIds=['alex','mike','john','david'];const awayIds=['sarah'];const offlineIds=['nina'];const now=Date.now();const phase=Math.floor(now/12000)%4;Object.keys(traders).forEach(id=>{const t=traders[id];let next=t.status;if(phase===1&&id==='mike')next='away';else if(phase===2&&id==='sarah')next='online';else if(phase===3&&id==='john')next='offline';else if(onlineIds.includes(id))next='online';else if(awayIds.includes(id))next='away';else if(offlineIds.includes(id))next='offline';if(next!==t.status){t.status=next;}});renderOffers();renderChats();featured();}
+showToast('FRONTEND ESCROW SIMULATION READY');
+renderFilters();renderOffers();renderArbs();renderOrders();renderChats();featured();seedFeed();feedTimer=setInterval(()=>{expireLocalEscrow();renderOrders();updateOrderCountdowns();feedLine('MARKET',`Spread scanner updated · ${(0.72+Math.random()*1.4).toFixed(2)}% candidate edge`);},4500);setInterval(updateOrderCountdowns,1000);setInterval(simulatePresence,12000);
+</script>
+</body>
+</html>
