@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="description" content="NEXUS ARBITRAGE v3.1.0 — NEURA AI Trading Terminal" />
+  <title>NEXUS ARBITRAGE v3.1.0 · NEURA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#dashboard" aria-label="Nexus Arbitrage home">
+      <span class="brand-mark"><span></span><span></span><span></span></span>
+      <span class="brand-copy">
+        <strong>NEXUS</strong>
+        <small>ARBITRAGE</small>
+      </span>
+      <span class="version">v3.1.0</span>
+    </a>
+
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="active" href="#dashboard">Dashboard</a>
+      <a href="#opportunities">Opportunities</a>
+      <a href="#activity">Activity</a>
+      <a href="#system">System</a>
+    </nav>
+
+    <button class="wallet-btn" id="walletBtn" type="button">
+      <span class="status-dot"></span>
+      <span id="walletText">Connect Wallet</span>
+    </button>
+  </header>
+
+  <main id="dashboard" class="page-shell">
+    <section class="hero grid-12">
+      <div class="hero-copy span-8">
+        <div class="eyebrow"><span class="live-pulse"></span> NEURA AI · ARBITRAGE ENGINE ONLINE</div>
+        <h1>Capture the spread.<br><em>Move before the market does.</em></h1>
+        <p>Autonomous opportunity scanning across connected venues with execution-aware routing and live profitability estimates.</p>
+      </div>
+
+      <div class="hero-terminal span-4">
+        <div class="terminal-head">
+          <span>NEURA CORE</span>
+          <span class="terminal-state"><i></i> READY</span>
+        </div>
+        <div class="hero-metric-row">
+          <div>
+            <small>SCAN RATE</small>
+            <strong id="scanRate">1,284</strong><span>/s</span>
+          </div>
+          <div>
+            <small>LATENCY</small>
+            <strong id="latency">18</strong><span>ms</span>
+          </div>
+        </div>
+        <div class="progress"><span id="scanProgress"></span></div>
+        <div class="micro-copy">Cross-venue route graph synchronized</div>
+      </div>
+    </section>
+
+    <section class="stats grid-12" aria-label="Trading statistics">
+      <article class="stat-card span-3">
+        <div class="card-label">TOTAL CAPITAL</div>
+        <div class="stat-value" id="capital">$128,450.28</div>
+        <div class="stat-foot positive">+4.82% <span>24h</span></div>
+      </article>
+      <article class="stat-card span-3">
+        <div class="card-label">ARBITRAGE PROFIT</div>
+        <div class="stat-value cyan" id="profit">$8,724.61</div>
+        <div class="stat-foot positive">+12.63% <span>net realized</span></div>
+      </article>
+      <article class="stat-card span-3">
+        <div class="card-label">SUCCESS RATE</div>
+        <div class="stat-value" id="successRate">97.4%</div>
+        <div class="stat-foot">1,942 <span>executed routes</span></div>
+      </article>
+      <article class="stat-card span-3">
+        <div class="card-label">ACTIVE ROUTES</div>
+        <div class="stat-value cyan" id="activeRoutes">18</div>
+        <div class="stat-foot">Across <span>7 venues</span></div>
+      </article>
+    </section>
+
+    <section id="opportunities" class="panel table-panel span-full">
+      <div class="panel-head">
+        <div>
+          <div class="section-kicker">MARKET INTELLIGENCE</div>
+          <h2>Live Arbitrage Opportunities</h2>
+        </div>
+        <div class="panel-actions">
+          <span class="updated"><i></i> LIVE</span>
+          <button class="ghost-btn" id="refreshBtn" type="button">Refresh</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>PAIR</th>
+              <th>BUY VENUE</th>
+              <th>SELL VENUE</th>
+              <th>SPREAD</th>
+              <th>EST. PROFIT</th>
+              <th>LIQUIDITY</th>
+              <th>CONFIDENCE</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="opportunityRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="activity" class="grid-12 activity-grid">
+      <article class="panel feed-panel span-7">
+        <div class="panel-head compact">
+          <div>
+            <div class="section-kicker">EXECUTION STREAM</div>
+            <h2>Live Transaction Feed</h2>
+          </div>
+          <button class="ghost-btn" id="clearFeedBtn" type="button">Clear</button>
+        </div>
+        <div class="terminal-feed" id="terminalFeed" aria-live="polite"></div>
+      </article>
+
+      <article class="panel arb-panel span-5">
+        <div class="section-kicker">NEURA EXECUTION</div>
+        <h2>Autonomous Arbitrage</h2>
+        <p class="panel-description">Let the engine scan, score and route the strongest available spreads.</p>
+
+        <div class="route-preview">
+          <div class="route-node">
+            <span class="node-icon">◈</span>
+            <div><strong id="routeFrom">Binance</strong><small>BUY</small></div>
+          </div>
+          <div class="route-line"><span></span></div>
+          <div class="route-node">
+            <span class="node-icon">◆</span>
+            <div><strong id="routeTo">OKX</strong><small>SELL</small></div>
+          </div>
+        </div>
+
+        <div class="arb-stat-row">
+          <div><small>NET EDGE</small><strong id="netEdge">0.84%</strong></div>
+          <div><small>EST. RETURN</small><strong class="cyan" id="estReturn">$1,078.98</strong></div>
+        </div>
+
+        <button class="start-btn" id="startBtn" type="button">
+          <span class="btn-glow"></span>
+          <span class="btn-content"><span class="play-icon">▶</span> Start Arbitrage</span>
+        </button>
+        <div class="execution-note"><span class="shield">◉</span> Risk controls enabled · Max route slippage 0.15%</div>
+      </article>
+    </section>
+
+    <section id="system" class="system-grid grid-12">
+      <article class="panel mini-panel span-4">
+        <div class="section-kicker">SYSTEM HEALTH</div>
+        <div class="health-row"><span>Market feeds</span><strong class="ok">Operational</strong></div>
+        <div class="health-row"><span>Route engine</span><strong class="ok">Operational</strong></div>
+        <div class="health-row"><span>Risk governor</span><strong class="ok">Active</strong></div>
+      </article>
+      <article class="panel mini-panel span-4">
+        <div class="section-kicker">CONNECTED VENUES</div>
+        <div class="venue-pills" id="venuePills"></div>
+      </article>
+      <article class="panel mini-panel span-4">
+        <div class="section-kicker">ENGINE MODE</div>
+        <div class="mode-card"><span class="mode-orb"></span><div><strong>NEURA AUTO</strong><small>Scanning continuously</small></div></div>
+      </article>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="main.js"></script>
+</body>
+</html>
