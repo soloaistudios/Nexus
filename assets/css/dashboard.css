@@ -1,0 +1,591 @@
+/* =========================================================
+   CAP MARKETPLACE
+   AUTHENTICATED DASHBOARD
+   ========================================================= */
+
+/* -------------------------
+   DASHBOARD PAGE
+   ------------------------- */
+
+.dashboard-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* -------------------------
+   HEADER
+   ------------------------- */
+
+.dashboard-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding: 18px 32px;
+
+  background: rgba(7, 16, 29, 0.88);
+  border-bottom: 1px solid var(--border);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.dashboard-brand {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-logo {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+
+  object-fit: contain;
+
+  border-radius: 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+}
+
+.dashboard-brand-text {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dashboard-brand-text strong {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.dashboard-brand-text span {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+
+/* -------------------------
+   ACCOUNT AREA
+   ------------------------- */
+
+.dashboard-account {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-avatar {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--accent-soft),
+      rgba(255, 255, 255, 0.04)
+    );
+
+  border: 1px solid var(--border-strong);
+
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.dashboard-account-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.dashboard-account-info strong {
+  max-width: 180px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dashboard-account-info span {
+  max-width: 220px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+
+/* -------------------------
+   MAIN
+   ------------------------- */
+
+.dashboard-main {
+  width: min(100% - 40px, 1280px);
+  margin-inline: auto;
+
+  padding: 42px 0 56px;
+
+  flex: 1;
+}
+
+
+/* -------------------------
+   WELCOME
+   ------------------------- */
+
+.dashboard-welcome {
+  margin-bottom: 30px;
+
+  padding: 30px;
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(77, 163, 255, 0.12),
+      transparent 38%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(18, 35, 56, 0.92),
+      rgba(15, 29, 46, 0.96)
+    );
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+
+  box-shadow: var(--shadow-panel);
+}
+
+.dashboard-eyebrow {
+  display: inline-flex;
+  align-items: center;
+
+  margin-bottom: 8px;
+
+  color: var(--accent);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.dashboard-welcome h1,
+.dashboard-section-heading h2 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.dashboard-welcome h1 {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.dashboard-welcome p {
+  margin: 10px 0 0;
+
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+
+/* -------------------------
+   OVERVIEW CARDS
+   ------------------------- */
+
+.dashboard-overview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+
+  margin-bottom: 38px;
+}
+
+.dashboard-card {
+  min-width: 0;
+
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18, 35, 56, 0.86),
+      rgba(15, 29, 46, 0.96)
+    );
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+}
+
+.dashboard-card-label {
+  color: var(--text-secondary);
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dashboard-card-value {
+  color: var(--text-primary);
+
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.dashboard-card-meta {
+  min-height: 18px;
+
+  color: var(--text-muted);
+
+  font-size: 11px;
+}
+
+
+/* -------------------------
+   SECTIONS
+   ------------------------- */
+
+.dashboard-section {
+  margin-bottom: 34px;
+}
+
+.dashboard-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 16px;
+}
+
+.dashboard-section-heading h2 {
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+
+/* -------------------------
+   QUICK ACTIONS
+   ------------------------- */
+
+.dashboard-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dashboard-action {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 18px;
+
+  text-align: left;
+
+  color: var(--text-primary);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18, 35, 56, 0.82),
+      rgba(15, 29, 46, 0.94)
+    );
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.14);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.dashboard-action:hover {
+  transform: translateY(-2px);
+
+  border-color: rgba(77, 163, 255, 0.3);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(22, 43, 68, 0.92),
+      rgba(15, 29, 46, 0.98)
+    );
+
+  box-shadow: 0 15px 32px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-action:active {
+  transform: translateY(0);
+}
+
+.dashboard-action-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 12px;
+
+  background: var(--accent-soft);
+  border: 1px solid rgba(77, 163, 255, 0.18);
+
+  color: var(--accent);
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.dashboard-action > span:last-child {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dashboard-action strong {
+  color: var(--text-primary);
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dashboard-action small {
+  color: var(--text-muted);
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+
+/* -------------------------
+   EMPTY STATE
+   ------------------------- */
+
+.dashboard-empty {
+  min-height: 240px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 36px 24px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15, 29, 46, 0.9),
+      rgba(11, 22, 38, 0.96)
+    );
+
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+}
+
+.dashboard-empty-icon {
+  width: 46px;
+  height: 46px;
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: 12px;
+
+  border-radius: 14px;
+
+  background: var(--bg-panel-soft);
+  border: 1px solid var(--border);
+
+  color: var(--text-muted);
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.dashboard-empty h3 {
+  margin: 0 0 6px;
+
+  color: var(--text-primary);
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.dashboard-empty p {
+  width: min(100%, 460px);
+
+  margin: 0;
+
+  color: var(--text-secondary);
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* -------------------------
+   FOOTER
+   ------------------------- */
+
+.dashboard-footer {
+  width: min(100% - 40px, 1280px);
+  margin-inline: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 0 0 28px;
+
+  color: var(--text-muted);
+
+  font-size: 11px;
+}
+
+.dashboard-footer span:first-child {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+
+/* -------------------------
+   RESPONSIVE
+   ------------------------- */
+
+@media (max-width: 1050px) {
+  .dashboard-overview,
+  .dashboard-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard-header {
+    padding: 14px 18px;
+  }
+
+  .dashboard-main {
+    width: min(100% - 24px, 1280px);
+    padding-top: 28px;
+  }
+
+  .dashboard-brand-text span {
+    display: none;
+  }
+
+  .dashboard-account-info {
+    display: none;
+  }
+
+  .dashboard-welcome {
+    padding: 24px;
+  }
+
+  .dashboard-overview,
+  .dashboard-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-card {
+    padding: 19px;
+  }
+
+  .dashboard-footer {
+    width: min(100% - 24px, 1280px);
+    padding-bottom: 22px;
+  }
+}
+
+@media (max-width: 420px) {
+  .dashboard-header {
+    gap: 12px;
+  }
+
+  .dashboard-logo {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .dashboard-welcome {
+    border-radius: var(--radius-lg);
+  }
+
+  .dashboard-welcome h1 {
+    font-size: 28px;
+  }
+
+  .dashboard-action {
+    padding: 16px;
+  }
+}
