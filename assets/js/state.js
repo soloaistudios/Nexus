@@ -55,6 +55,7 @@ export const state = {
   marketplace: {
     offers: [],
     selectedOfferId: null,
+
     filters: {
       asset: "CAP",
       side: "all",
@@ -129,16 +130,28 @@ export function isAuthenticated() {
 
 /**
  * Set authentication state.
+ *
+ * The session ID is stored here so the central application
+ * state remains synchronized with the authentication service.
  */
-export function setAuthenticatedUser(user) {
+export function setAuthenticatedUser(
+  user,
+  sessionId = null
+) {
   if (!user || typeof user !== "object") {
     throw new TypeError(
       "CAP Marketplace: a valid user object is required."
     );
   }
 
-  state.auth.status = "authenticated";
-  state.auth.userId = user.id ?? null;
+  state.auth.status =
+    "authenticated";
+
+  state.auth.userId =
+    user.id ?? null;
+
+  state.auth.sessionId =
+    sessionId ?? null;
 
   state.user = {
     id: user.id ?? null,
@@ -151,12 +164,29 @@ export function setAuthenticatedUser(user) {
 
 
 /**
- * Clear the authenticated user.
+ * Set the active session ID independently.
+ *
+ * Useful when authentication and session persistence are
+ * handled by separate steps.
+ */
+export function setSessionId(sessionId) {
+  state.auth.sessionId =
+    sessionId ?? null;
+}
+
+
+/**
+ * Clear the authenticated user and active session.
  */
 export function clearAuthenticatedUser() {
-  state.auth.status = "signed_out";
-  state.auth.userId = null;
-  state.auth.sessionId = null;
+  state.auth.status =
+    "signed_out";
+
+  state.auth.userId =
+    null;
+
+  state.auth.sessionId =
+    null;
 
   state.user = {
     id: null,
@@ -172,10 +202,12 @@ export function clearAuthenticatedUser() {
  * Get a wallet balance.
  */
 export function getBalance(asset) {
-  if (!Object.prototype.hasOwnProperty.call(
-    state.wallet.balances,
-    asset
-  )) {
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      state.wallet.balances,
+      asset
+    )
+  ) {
     throw new Error(
       `CAP Marketplace: unsupported asset "${asset}".`
     );
@@ -189,10 +221,12 @@ export function getBalance(asset) {
  * Get a reserved wallet balance.
  */
 export function getReservedBalance(asset) {
-  if (!Object.prototype.hasOwnProperty.call(
-    state.wallet.reserved,
-    asset
-  )) {
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      state.wallet.reserved,
+      asset
+    )
+  ) {
     throw new Error(
       `CAP Marketplace: unsupported asset "${asset}".`
     );
@@ -208,7 +242,8 @@ export function getReservedBalance(asset) {
 export function getAvailableBalance(asset) {
   return Math.max(
     0,
-    getBalance(asset) - getReservedBalance(asset)
+    getBalance(asset) -
+      getReservedBalance(asset)
   );
 }
 
@@ -223,7 +258,8 @@ export function getAvailableBalance(asset) {
 export function reserveBalance(asset, amount) {
   validatePositiveAmount(amount);
 
-  const available = getAvailableBalance(asset);
+  const available =
+    getAvailableBalance(asset);
 
   if (available < amount) {
     throw new Error(
@@ -231,17 +267,22 @@ export function reserveBalance(asset, amount) {
     );
   }
 
-  state.wallet.reserved[asset] += amount;
+  state.wallet.reserved[asset] +=
+    amount;
 }
 
 
 /**
  * Release a previously reserved amount.
  */
-export function releaseReservedBalance(asset, amount) {
+export function releaseReservedBalance(
+  asset,
+  amount
+) {
   validatePositiveAmount(amount);
 
-  const reserved = getReservedBalance(asset);
+  const reserved =
+    getReservedBalance(asset);
 
   if (reserved < amount) {
     throw new Error(
@@ -249,7 +290,8 @@ export function releaseReservedBalance(asset, amount) {
     );
   }
 
-  state.wallet.reserved[asset] -= amount;
+  state.wallet.reserved[asset] -=
+    amount;
 }
 
 
@@ -259,7 +301,10 @@ export function releaseReservedBalance(asset, amount) {
  * Positive amount = credit.
  * Negative amount = debit.
  */
-export function adjustBalance(asset, amount) {
+export function adjustBalance(
+  asset,
+  amount
+) {
   if (
     typeof amount !== "number" ||
     !Number.isFinite(amount)
@@ -269,8 +314,20 @@ export function adjustBalance(asset, amount) {
     );
   }
 
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      state.wallet.balances,
+      asset
+    )
+  ) {
+    throw new Error(
+      `CAP Marketplace: unsupported asset "${asset}".`
+    );
+  }
+
   const nextBalance =
-    state.wallet.balances[asset] + amount;
+    state.wallet.balances[asset] +
+    amount;
 
   if (nextBalance < 0) {
     throw new Error(
@@ -278,29 +335,49 @@ export function adjustBalance(asset, amount) {
     );
   }
 
-  state.wallet.balances[asset] = nextBalance;
+  state.wallet.balances[asset] =
+    nextBalance;
 }
 
 
 /**
  * Add a marketplace notification.
  */
-export function addNotification(notification) {
-  if (!notification || typeof notification !== "object") {
+export function addNotification(
+  notification
+) {
+  if (
+    !notification ||
+    typeof notification !== "object"
+  ) {
     throw new TypeError(
       "CAP Marketplace: notification must be an object."
     );
   }
 
   state.notifications.unshift({
-    id: notification.id ?? crypto.randomUUID(),
-    type: notification.type ?? "info",
-    title: notification.title ?? "",
-    message: notification.message ?? "",
+    id:
+      notification.id ??
+      createEntityId("notification"),
+
+    type:
+      notification.type ??
+      "info",
+
+    title:
+      notification.title ??
+      "",
+
+    message:
+      notification.message ??
+      "",
+
     createdAt:
       notification.createdAt ??
       new Date().toISOString(),
-    read: Boolean(notification.read),
+
+    read:
+      Boolean(notification.read),
   });
 }
 
@@ -308,10 +385,14 @@ export function addNotification(notification) {
 /**
  * Mark a notification as read.
  */
-export function markNotificationRead(notificationId) {
-  const notification = state.notifications.find(
-    (item) => item.id === notificationId
-  );
+export function markNotificationRead(
+  notificationId
+) {
+  const notification =
+    state.notifications.find(
+      (item) =>
+        item.id === notificationId
+    );
 
   if (notification) {
     notification.read = true;
@@ -320,9 +401,12 @@ export function markNotificationRead(notificationId) {
 
 
 /**
- * Generate a simple local identifier for front-end entities.
+ * Generate a simple local identifier
+ * for front-end entities.
  */
-export function createEntityId(prefix = "entity") {
+export function createEntityId(
+  prefix = "entity"
+) {
   const randomPart =
     Math.random()
       .toString(36)
@@ -335,7 +419,9 @@ export function createEntityId(prefix = "entity") {
 /**
  * Validate monetary/asset quantities.
  */
-function validatePositiveAmount(amount) {
+function validatePositiveAmount(
+  amount
+) {
   if (
     typeof amount !== "number" ||
     !Number.isFinite(amount) ||
