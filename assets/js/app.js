@@ -7,6 +7,7 @@ import { state } from "./state.js";
 
 import { renderSignup } from "./signup.js";
 import { renderSignin } from "./signin.js";
+import { renderDashboard } from "./dashboard.js";
 
 import { isSignedIn } from "./auth.js";
 
@@ -22,22 +23,20 @@ if (!app) {
 
 /**
  * Available frontend screens.
- *
- * We deliberately keep routing small at this stage.
- * More screens will be added only after they are built
- * and validated.
  */
 const SCREENS = {
   SIGNUP: "signup",
   SIGNIN: "signin",
+  DASHBOARD: "dashboard",
 };
 
 
 /**
- * Render a screen.
+ * Navigate to a frontend screen.
  */
 function navigate(screen) {
   switch (screen) {
+
     case SCREENS.SIGNUP:
       state.app.currentScreen = SCREENS.SIGNUP;
       renderSignup(app);
@@ -46,6 +45,23 @@ function navigate(screen) {
     case SCREENS.SIGNIN:
       state.app.currentScreen = SCREENS.SIGNIN;
       renderSignin(app);
+      break;
+
+    case SCREENS.DASHBOARD:
+
+      /*
+       * Never render the authenticated area without
+       * a valid local session.
+       */
+      if (!isSignedIn()) {
+        navigate(SCREENS.SIGNIN);
+        return;
+      }
+
+      state.app.currentScreen = SCREENS.DASHBOARD;
+      state.auth.status = "authenticated";
+
+      renderDashboard(app);
       break;
 
     default:
@@ -57,7 +73,7 @@ function navigate(screen) {
 
 
 /**
- * Handle Signup → Sign In.
+ * Signup → Sign In
  */
 window.addEventListener(
   "cap:signin-requested",
@@ -68,7 +84,7 @@ window.addEventListener(
 
 
 /**
- * Handle Sign In → Signup.
+ * Sign In → Signup
  */
 window.addEventListener(
   "cap:signup-requested",
@@ -79,11 +95,7 @@ window.addEventListener(
 
 
 /**
- * Handle successful account creation.
- *
- * The account is created locally by auth.js.
- * We move the user to Sign In rather than silently
- * authenticating them.
+ * Account created → Sign In
  */
 window.addEventListener(
   "cap:account-created",
@@ -94,39 +106,27 @@ window.addEventListener(
 
 
 /**
- * Handle successful authentication.
- *
- * The Dashboard does not exist yet, so we intentionally
- * remain on the Sign In screen for this checkpoint.
- *
- * The next authenticated module will replace this
- * behavior with the real application entry.
+ * Successful authentication → Dashboard
  */
 window.addEventListener(
   "cap:authenticated",
   () => {
     state.auth.status = "authenticated";
 
-    /*
-     * Dashboard routing will be connected only after
-     * the dashboard module has been built and validated.
-     */
+    navigate(SCREENS.DASHBOARD);
   }
 );
 
 
 /**
- * Start the application.
+ * Start application.
  */
 function startApp() {
   state.app.initialized = true;
 
-  /*
-   * Existing session detection is intentionally handled
-   * without displaying an unfinished authenticated area.
-   */
   if (isSignedIn()) {
-    navigate(SCREENS.SIGNIN);
+    state.auth.status = "authenticated";
+    navigate(SCREENS.DASHBOARD);
     return;
   }
 
