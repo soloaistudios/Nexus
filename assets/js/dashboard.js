@@ -7,15 +7,11 @@ import { getCurrentAccount } from "./auth.js";
 
 
 /**
- * Render the authenticated dashboard shell.
+ * Render the authenticated dashboard.
  *
- * At this stage:
- * - No fake balances are created.
- * - No marketplace offers are invented.
- * - No transactions are simulated.
- *
- * We are only establishing the authenticated application
- * shell that future modules will plug into.
+ * This module currently provides the application shell.
+ * Real wallet, marketplace, order, and arbitrage data will
+ * be connected through their own modules later.
  */
 export function renderDashboard(app) {
   const account = getCurrentAccount();
@@ -31,11 +27,12 @@ export function renderDashboard(app) {
       .trim()
       .split(/\s+/)[0] || "User";
 
+
   app.innerHTML = `
     <section class="dashboard-page">
 
       <!-- =================================================
-           TOP BAR
+           HEADER
            ================================================= -->
 
       <header class="dashboard-header">
@@ -49,23 +46,42 @@ export function renderDashboard(app) {
           />
 
           <div class="dashboard-brand-text">
-            <strong>CAP Marketplace</strong>
-            <span>P2P Opportunity Exchange</span>
+
+            <strong>
+              CAP Marketplace
+            </strong>
+
+            <span>
+              P2P Opportunity Exchange
+            </span>
+
           </div>
 
         </div>
 
+
         <div class="dashboard-account">
 
-          <div class="dashboard-avatar" aria-hidden="true">
+          <div
+            class="dashboard-avatar"
+            aria-hidden="true"
+          >
             ${escapeHtml(
               firstName.charAt(0).toUpperCase()
             )}
           </div>
 
+
           <div class="dashboard-account-info">
-            <strong>${escapeHtml(firstName)}</strong>
-            <span>${escapeHtml(account.email)}</span>
+
+            <strong>
+              ${escapeHtml(firstName)}
+            </strong>
+
+            <span>
+              ${escapeHtml(account.email)}
+            </span>
+
           </div>
 
         </div>
@@ -74,14 +90,20 @@ export function renderDashboard(app) {
 
 
       <!-- =================================================
-           MAIN CONTENT
+           MAIN
            ================================================= -->
 
       <main class="dashboard-main">
 
+
+        <!-- =================================================
+             WELCOME
+             ================================================= -->
+
         <section class="dashboard-welcome">
 
           <div>
+
             <span class="dashboard-eyebrow">
               MARKETPLACE
             </span>
@@ -93,6 +115,7 @@ export function renderDashboard(app) {
             <p>
               Your opportunity workspace is ready.
             </p>
+
           </div>
 
         </section>
@@ -106,6 +129,7 @@ export function renderDashboard(app) {
           class="dashboard-overview"
           aria-label="Account overview"
         >
+
 
           <article class="dashboard-card">
 
@@ -135,7 +159,7 @@ export function renderDashboard(app) {
             </strong>
 
             <span class="dashboard-card-meta">
-              Awaiting marketplace connection
+              Marketplace not connected
             </span>
 
           </article>
@@ -184,33 +208,50 @@ export function renderDashboard(app) {
         <section class="dashboard-section">
 
           <div class="dashboard-section-heading">
+
             <div>
+
               <span class="dashboard-eyebrow">
                 GET STARTED
               </span>
 
-              <h2>Opportunity workspace</h2>
+              <h2>
+                Opportunity workspace
+              </h2>
+
             </div>
+
           </div>
 
 
           <div class="dashboard-actions">
+
 
             <button
               type="button"
               class="dashboard-action"
               data-action="marketplace"
             >
-              <span class="dashboard-action-icon">
+
+              <span
+                class="dashboard-action-icon"
+                aria-hidden="true"
+              >
                 M
               </span>
 
               <span>
-                <strong>Marketplace</strong>
+
+                <strong>
+                  Marketplace
+                </strong>
+
                 <small>
                   Explore P2P CAP offers
                 </small>
+
               </span>
+
             </button>
 
 
@@ -219,16 +260,26 @@ export function renderDashboard(app) {
               class="dashboard-action"
               data-action="wallet"
             >
-              <span class="dashboard-action-icon">
+
+              <span
+                class="dashboard-action-icon"
+                aria-hidden="true"
+              >
                 W
               </span>
 
               <span>
-                <strong>Wallet</strong>
+
+                <strong>
+                  Wallet
+                </strong>
+
                 <small>
                   Manage balances and assets
                 </small>
+
               </span>
+
             </button>
 
 
@@ -237,16 +288,26 @@ export function renderDashboard(app) {
               class="dashboard-action"
               data-action="orders"
             >
-              <span class="dashboard-action-icon">
+
+              <span
+                class="dashboard-action-icon"
+                aria-hidden="true"
+              >
                 O
               </span>
 
               <span>
-                <strong>Orders</strong>
+
+                <strong>
+                  Orders
+                </strong>
+
                 <small>
                   Track your P2P transactions
                 </small>
+
               </span>
+
             </button>
 
 
@@ -255,17 +316,28 @@ export function renderDashboard(app) {
               class="dashboard-action"
               data-action="arbitrage"
             >
-              <span class="dashboard-action-icon">
+
+              <span
+                class="dashboard-action-icon"
+                aria-hidden="true"
+              >
                 A
               </span>
 
               <span>
-                <strong>Arbitrage</strong>
+
+                <strong>
+                  Arbitrage
+                </strong>
+
                 <small>
                   Discover pricing opportunities
                 </small>
+
               </span>
+
             </button>
+
 
           </div>
 
@@ -281,11 +353,15 @@ export function renderDashboard(app) {
           <div class="dashboard-section-heading">
 
             <div>
+
               <span class="dashboard-eyebrow">
                 ACTIVITY
               </span>
 
-              <h2>Recent activity</h2>
+              <h2>
+                Recent activity
+              </h2>
+
             </div>
 
           </div>
@@ -293,11 +369,16 @@ export function renderDashboard(app) {
 
           <div class="dashboard-empty">
 
-            <div class="dashboard-empty-icon">
+            <div
+              class="dashboard-empty-icon"
+              aria-hidden="true"
+            >
               —
             </div>
 
-            <h3>No activity yet</h3>
+            <h3>
+              No activity yet
+            </h3>
 
             <p>
               Your marketplace activity will appear here
@@ -307,6 +388,7 @@ export function renderDashboard(app) {
           </div>
 
         </section>
+
 
       </main>
 
@@ -330,50 +412,59 @@ export function renderDashboard(app) {
     </section>
   `;
 
+
   attachDashboardEvents();
 }
 
 
-/**
- * Dashboard action hooks.
- *
- * These are intentionally placeholders.
- * We do not navigate to modules that haven't been built.
- */
+/* =========================================================
+   DASHBOARD ACTION EVENTS
+   ========================================================= */
+
 function attachDashboardEvents() {
+
   const actionButtons =
     document.querySelectorAll(
       ".dashboard-action"
     );
 
-  actionButtons.forEach((button) => {
-    button.addEventListener(
-      "click",
-      () => {
-        const action =
-          button.dataset.action;
 
-        window.dispatchEvent(
-          new CustomEvent(
-            "cap:dashboard-action",
-            {
-              detail: {
-                action,
-              },
-            }
-          )
-        );
-      }
-    );
-  });
+  actionButtons.forEach(
+    (button) => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const action =
+            button.dataset.action;
+
+
+          window.dispatchEvent(
+            new CustomEvent(
+              "cap:dashboard-action",
+              {
+                detail: {
+                  action,
+                },
+              }
+            )
+          );
+
+        }
+      );
+
+    }
+  );
 }
 
 
-/**
- * Escape text before inserting account data
- * into generated HTML.
- */
+/* =========================================================
+   HTML ESCAPING
+   ========================================================= */
+
 function escapeHtml(value) {
+
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
