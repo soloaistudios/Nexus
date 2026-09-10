@@ -4,14 +4,10 @@
    ========================================================= */
 
 import { state } from "./state.js";
-
 import { renderSignup } from "./signup.js";
 import { renderSignin } from "./signin.js";
 import { renderDashboard } from "./dashboard.js";
-
-import {
-  isSignedIn
-} from "./auth.js";
+import { isSignedIn } from "./auth.js";
 
 
 const app = document.getElementById("app");
@@ -27,143 +23,87 @@ if (!app) {
    SCREENS
    --------------------------------------------------------- */
 
-const SCREENS = {
+const SCREENS = Object.freeze({
   SIGNUP: "signup",
   SIGNIN: "signin",
   DASHBOARD: "dashboard",
-};
+});
 
 
 /* ---------------------------------------------------------
-   ROUTER
+   NAVIGATION
    --------------------------------------------------------- */
 
 function navigate(screen) {
 
-  try {
+  console.log(
+    "CAP NAVIGATE:",
+    screen
+  );
 
-    switch (screen) {
+  switch (screen) {
 
-      case SCREENS.SIGNUP:
+    case SCREENS.SIGNUP:
 
-        state.app.currentScreen = SCREENS.SIGNUP;
+      state.app.currentScreen =
+        SCREENS.SIGNUP;
 
-        renderSignup(app);
+      renderSignup(app);
 
-        break;
-
-
-      case SCREENS.SIGNIN:
-
-        state.app.currentScreen = SCREENS.SIGNIN;
-
-        renderSignin(app);
-
-        break;
+      return;
 
 
-      case SCREENS.DASHBOARD:
+    case SCREENS.SIGNIN:
 
-        /*
-         * Dashboard is protected.
-         * No local session = no dashboard.
-         */
-        if (!isSignedIn()) {
-          navigate(SCREENS.SIGNIN);
-          return;
-        }
+      state.app.currentScreen =
+        SCREENS.SIGNIN;
 
-        state.app.currentScreen = SCREENS.DASHBOARD;
-        state.auth.status = "authenticated";
+      renderSignin(app);
 
-        renderDashboard(app);
-
-        break;
+      return;
 
 
-      default:
+    case SCREENS.DASHBOARD:
 
-        throw new Error(
-          `Unknown application screen: ${screen}`
+      /*
+       * The dashboard requires an active
+       * local authentication session.
+       */
+      if (!isSignedIn()) {
+
+        console.warn(
+          "CAP: dashboard blocked — no active session."
         );
-    }
 
-  } catch (error) {
+        navigate(SCREENS.SIGNIN);
 
-    /*
-     * Instead of failing silently, show the error
-     * directly in the application during development.
-     */
-    console.error(
-      "CAP Marketplace navigation error:",
-      error
-    );
+        return;
+      }
 
-    app.innerHTML = `
-      <section
-        style="
-          min-height:100vh;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          padding:24px;
-          background:#07101d;
-          color:#f4f7fb;
-          font-family:system-ui,sans-serif;
-        "
-      >
+      state.app.currentScreen =
+        SCREENS.DASHBOARD;
 
-        <div
-          style="
-            width:min(100%,520px);
-            padding:28px;
-            border:1px solid rgba(255,255,255,.10);
-            border-radius:18px;
-            background:#0f1d2e;
-          "
-        >
+      state.auth.status =
+        "authenticated";
 
-          <h2 style="margin:0 0 10px;">
-            CAP Marketplace
-          </h2>
+      renderDashboard(app);
 
-          <p
-            style="
-              margin:0 0 16px;
-              color:#ff5c70;
-            "
-          >
-            The requested screen could not be loaded.
-          </p>
+      return;
 
-          <pre
-            style="
-              margin:0;
-              padding:14px;
-              overflow:auto;
-              white-space:pre-wrap;
-              border-radius:10px;
-              background:#07101d;
-              color:#9eafc3;
-              font-size:12px;
-            "
-          >${escapeHtml(
-            error instanceof Error
-              ? error.message
-              : String(error)
-          )}</pre>
 
-        </div>
+    default:
 
-      </section>
-    `;
+      throw new Error(
+        `CAP Marketplace: unknown screen "${screen}".`
+      );
   }
 }
 
 
 /* ---------------------------------------------------------
-   NAVIGATION EVENTS
+   EVENTS
    --------------------------------------------------------- */
+
 
 /*
  * Signup → Sign In
@@ -171,7 +111,10 @@ function navigate(screen) {
 window.addEventListener(
   "cap:signin-requested",
   () => {
-    navigate(SCREENS.SIGNIN);
+
+    navigate(
+      SCREENS.SIGNIN
+    );
   }
 );
 
@@ -182,32 +125,46 @@ window.addEventListener(
 window.addEventListener(
   "cap:signup-requested",
   () => {
-    navigate(SCREENS.SIGNUP);
+
+    navigate(
+      SCREENS.SIGNUP
+    );
   }
 );
 
 
 /*
- * Signup completed → Sign In
+ * Account created → Sign In
  */
 window.addEventListener(
   "cap:account-created",
   () => {
-    navigate(SCREENS.SIGNIN);
+
+    navigate(
+      SCREENS.SIGNIN
+    );
   }
 );
 
 
 /*
- * Successful Sign In → Dashboard
+ * Successful authentication → Dashboard
  */
 window.addEventListener(
   "cap:authenticated",
-  () => {
+  (event) => {
 
-    state.auth.status = "authenticated";
+    console.log(
+      "CAP AUTHENTICATED EVENT RECEIVED:",
+      event.detail
+    );
 
-    navigate(SCREENS.DASHBOARD);
+    state.auth.status =
+      "authenticated";
+
+    navigate(
+      SCREENS.DASHBOARD
+    );
   }
 );
 
@@ -221,39 +178,28 @@ function startApp() {
   state.app.initialized = true;
 
   /*
-   * Existing valid session:
-   * open dashboard.
+   * If a valid local session already exists,
+   * open the dashboard.
    */
   if (isSignedIn()) {
 
-    state.auth.status = "authenticated";
+    state.auth.status =
+      "authenticated";
 
-    navigate(SCREENS.DASHBOARD);
+    navigate(
+      SCREENS.DASHBOARD
+    );
 
     return;
   }
 
   /*
-   * No session:
-   * start with Signup.
+   * New visitor → Signup.
    */
-  navigate(SCREENS.SIGNUP);
+  navigate(
+    SCREENS.SIGNUP
+  );
 }
 
 
 startApp();
-
-
-/* ---------------------------------------------------------
-   SAFE HTML ESCAPING
-   --------------------------------------------------------- */
-
-function escapeHtml(value) {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
