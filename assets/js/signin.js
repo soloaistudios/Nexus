@@ -1,0 +1,359 @@
+/* =========================================================
+   CAP MARKETPLACE
+   SIGN IN SCREEN
+   ========================================================= */
+
+import {
+  signIn,
+  getCurrentAccount,
+} from "./auth.js";
+
+
+/**
+ * Render the Sign In screen.
+ */
+export function renderSignin(app) {
+  app.innerHTML = `
+    <section class="signin-page">
+      <div class="signin-shell">
+
+        <div class="signin-brand">
+          <img
+            class="signin-logo"
+            src="assets/icons/cap-logo.png"
+            alt="CAP Marketplace"
+          />
+
+          <h1>CAP Marketplace</h1>
+
+          <p class="signin-tagline">
+            P2P Opportunity Exchange
+          </p>
+        </div>
+
+        <div class="signin-card">
+
+          <div class="signin-header">
+            <h2>Welcome back</h2>
+
+            <p>
+              Sign in to access your marketplace account.
+            </p>
+          </div>
+
+          <form id="signin-form" novalidate>
+
+            <div class="form-field">
+              <label for="signin-email">
+                Email address
+              </label>
+
+              <input
+                id="signin-email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                placeholder="you@example.com"
+                required
+              />
+
+              <small
+                class="field-error"
+                id="signin-email-error"
+              ></small>
+            </div>
+
+            <div class="form-field">
+              <label for="signin-password">
+                Password
+              </label>
+
+              <input
+                id="signin-password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Enter your password"
+                required
+              />
+
+              <small
+                class="field-error"
+                id="signin-password-error"
+              ></small>
+            </div>
+
+            <button
+              type="submit"
+              class="signin-submit"
+              id="signin-submit"
+            >
+              Sign in
+            </button>
+
+            <div
+              id="signin-status"
+              class="signin-status"
+              role="status"
+              aria-live="polite"
+            ></div>
+
+          </form>
+
+          <div class="signin-footer">
+            <span>Don't have an account?</span>
+
+            <button
+              type="button"
+              id="show-signup"
+              class="signup-link"
+            >
+              Create account
+            </button>
+          </div>
+
+        </div>
+
+        <p class="signin-security">
+          This is a browser-only prototype. Production
+          authentication requires secure server-side services.
+        </p>
+
+      </div>
+    </section>
+  `;
+
+  const form =
+    document.getElementById("signin-form");
+
+  if (!form) {
+    throw new Error(
+      "CAP Marketplace: signin form could not be created."
+    );
+  }
+
+  form.addEventListener(
+    "submit",
+    handleSigninSubmit
+  );
+
+  const signupButton =
+    document.getElementById("show-signup");
+
+  signupButton?.addEventListener(
+    "click",
+    handleSignupRequest
+  );
+
+  /*
+   * If a valid session already exists, don't
+   * automatically pretend the dashboard exists yet.
+   */
+  const existingAccount = getCurrentAccount();
+
+  if (existingAccount) {
+    setSigninStatus(
+      `You're already signed in as ${existingAccount.email}.`,
+      "success"
+    );
+  }
+}
+
+
+/**
+ * Process the Sign In form.
+ */
+function handleSigninSubmit(event) {
+  event.preventDefault();
+
+  clearSigninErrors();
+
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+
+  const email = String(
+    formData.get("email") || ""
+  ).trim();
+
+  const password = String(
+    formData.get("password") || ""
+  );
+
+  let valid = true;
+
+  if (!isValidEmail(email)) {
+    showSigninError(
+      "signin-email-error",
+      "Please enter a valid email address."
+    );
+
+    valid = false;
+  }
+
+  if (!password) {
+    showSigninError(
+      "signin-password-error",
+      "Please enter your password."
+    );
+
+    valid = false;
+  }
+
+  if (!valid) {
+    setSigninStatus(
+      "Please correct the highlighted fields.",
+      "error"
+    );
+
+    return;
+  }
+
+  try {
+    const result = signIn({
+      email,
+      password,
+    });
+
+    setSigninStatus(
+      `Welcome back, ${result.user.fullName}.`,
+      "success"
+    );
+
+    disableSigninForm(true);
+
+    /*
+     * Tell the application shell that authentication
+     * succeeded.
+     *
+     * The authenticated dashboard will consume this
+     * event when that module is added.
+     */
+    window.dispatchEvent(
+      new CustomEvent(
+        "cap:authenticated",
+        {
+          detail: {
+            userId: result.user.id,
+            fullName: result.user.fullName,
+            email: result.user.email,
+            sessionId: result.session.sessionId,
+          },
+        }
+      )
+    );
+
+  } catch (error) {
+    setSigninStatus(
+      error instanceof Error
+        ? error.message
+        : "Unable to sign in.",
+      "error"
+    );
+  }
+}
+
+
+/**
+ * Request navigation back to Signup.
+ */
+function handleSignupRequest() {
+  window.dispatchEvent(
+    new CustomEvent(
+      "cap:signup-requested"
+    )
+  );
+}
+
+
+/**
+ * Disable signin controls after success.
+ */
+function disableSigninForm(disabled) {
+  const form =
+    document.getElementById("signin-form");
+
+  if (!form) {
+    return;
+  }
+
+  const controls =
+    form.querySelectorAll(
+      "input, button"
+    );
+
+  controls.forEach((control) => {
+    control.disabled = disabled;
+  });
+
+  const submitButton =
+    document.getElementById("signin-submit");
+
+  if (submitButton) {
+    submitButton.textContent =
+      disabled
+        ? "Signed in"
+        : "Sign in";
+  }
+}
+
+
+/**
+ * Basic email validation.
+ */
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+
+/**
+ * Display a field-specific error.
+ */
+function showSigninError(
+  elementId,
+  message
+) {
+  const element =
+    document.getElementById(elementId);
+
+  if (element) {
+    element.textContent = message;
+  }
+}
+
+
+/**
+ * Clear all signin field errors.
+ */
+function clearSigninErrors() {
+  const errors =
+    document.querySelectorAll(
+      ".field-error"
+    );
+
+  errors.forEach((error) => {
+    error.textContent = "";
+  });
+
+  setSigninStatus("", "");
+}
+
+
+/**
+ * Display general signin status.
+ */
+function setSigninStatus(
+  message,
+  type
+) {
+  const status =
+    document.getElementById(
+      "signin-status"
+    );
+
+  if (!status) {
+    return;
+  }
+
+  status.textContent = message;
+  status.dataset.type = type || "";
+}
