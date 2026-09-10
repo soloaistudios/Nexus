@@ -3,6 +3,8 @@
    SIGNUP SCREEN
    ========================================================= */
 
+import { createAccount } from "./auth.js";
+
 export function renderSignup(app) {
   app.innerHTML = `
     <section class="signup-page">
@@ -26,6 +28,7 @@ export function renderSignup(app) {
 
           <div class="signup-header">
             <h2>Create your account</h2>
+
             <p>
               Join the marketplace and discover new P2P opportunities.
             </p>
@@ -88,9 +91,7 @@ export function renderSignup(app) {
                 required
               />
 
-              <small
-                class="field-hint"
-              >
+              <small class="field-hint">
                 Use at least 8 characters.
               </small>
 
@@ -141,6 +142,7 @@ export function renderSignup(app) {
             <button
               type="submit"
               class="signup-submit"
+              id="signup-submit"
             >
               Create account
             </button>
@@ -169,8 +171,9 @@ export function renderSignup(app) {
         </div>
 
         <p class="signup-security">
-          Your account information will be securely handled by the
-          authentication layer when backend services are connected.
+          This browser-only prototype keeps account data on this
+          device. Production authentication will require a secure
+          server-side authentication system.
         </p>
 
       </div>
@@ -180,19 +183,32 @@ export function renderSignup(app) {
   const form = document.getElementById("signup-form");
 
   if (!form) {
-    throw new Error("CAP Marketplace: signup form could not be created.");
+    throw new Error(
+      "CAP Marketplace: signup form could not be created."
+    );
   }
 
-  form.addEventListener("submit", handleSignupSubmit);
+  form.addEventListener(
+    "submit",
+    handleSignupSubmit
+  );
+
+  /*
+   * Sign-in navigation will be connected when the
+   * signin module is added.
+   */
+  const signinButton =
+    document.getElementById("show-signin");
+
+  signinButton?.addEventListener(
+    "click",
+    handleSigninRequest
+  );
 }
 
 
 /**
- * Handle signup form submission.
- *
- * This stage performs front-end validation only.
- * It does NOT create a fake account or pretend that
- * authentication has already been completed.
+ * Handle account creation.
  */
 function handleSignupSubmit(event) {
   event.preventDefault();
@@ -203,17 +219,28 @@ function handleSignupSubmit(event) {
 
   const formData = new FormData(form);
 
-  const name = String(formData.get("name") || "").trim();
-  const email = String(formData.get("email") || "").trim();
-  const password = String(formData.get("password") || "");
+  const fullName = String(
+    formData.get("name") || ""
+  ).trim();
+
+  const email = String(
+    formData.get("email") || ""
+  ).trim();
+
+  const password = String(
+    formData.get("password") || ""
+  );
+
   const confirmPassword = String(
     formData.get("confirmPassword") || ""
   );
-  const termsAccepted = formData.get("terms") === "on";
+
+  const termsAccepted =
+    formData.get("terms") === "on";
 
   let valid = true;
 
-  if (name.length < 2) {
+  if (fullName.length < 2) {
     showSignupError(
       "signup-name-error",
       "Please enter your full name."
@@ -267,16 +294,105 @@ function handleSignupSubmit(event) {
     return;
   }
 
-  /*
-   * Backend authentication will be connected here later.
-   * We deliberately do not store passwords in localStorage
-   * or pretend an account has been created.
-   */
+  try {
+    const account = createAccount({
+      fullName,
+      email,
+      password,
+    });
+
+    /*
+     * Account creation succeeded.
+     *
+     * We do NOT sign the user in automatically.
+     * Signup and authentication remain separate steps.
+     */
+
+    setSignupStatus(
+      `Account created for ${account.fullName}. You can sign in next.`,
+      "success"
+    );
+
+    /*
+     * Lock the creation form after successful account
+     * creation so the user doesn't accidentally create
+     * another account from the same form.
+     */
+    disableSignupForm(true);
+
+    /*
+     * Notify the application shell.
+     *
+     * The sign-in module/router will consume this event
+     * once it is added.
+     */
+    window.dispatchEvent(
+      new CustomEvent("cap:account-created", {
+        detail: {
+          userId: account.id,
+          fullName: account.fullName,
+          email: account.email,
+        },
+      })
+    );
+
+  } catch (error) {
+    setSignupStatus(
+      error instanceof Error
+        ? error.message
+        : "Unable to create the account.",
+      "error"
+    );
+  }
+}
+
+
+/**
+ * Temporary navigation event.
+ *
+ * The actual Sign In screen will be connected in the
+ * next authentication module.
+ */
+function handleSigninRequest() {
+  window.dispatchEvent(
+    new CustomEvent("cap:signin-requested")
+  );
 
   setSignupStatus(
-    "Your details are valid. Authentication will be connected next.",
+    "Sign In will be connected in the next module.",
     "success"
   );
+}
+
+
+/**
+ * Disable or enable signup controls.
+ */
+function disableSignupForm(disabled) {
+  const form = document.getElementById("signup-form");
+
+  if (!form) {
+    return;
+  }
+
+  const controls =
+    form.querySelectorAll(
+      "input, button"
+    );
+
+  controls.forEach((control) => {
+    control.disabled = disabled;
+  });
+
+  const submitButton =
+    document.getElementById("signup-submit");
+
+  if (submitButton) {
+    submitButton.textContent =
+      disabled
+        ? "Account created"
+        : "Create account";
+  }
 }
 
 
@@ -289,10 +405,14 @@ function isValidEmail(email) {
 
 
 /**
- * Display a field-specific error.
+ * Display a field error.
  */
-function showSignupError(elementId, message) {
-  const element = document.getElementById(elementId);
+function showSignupError(
+  elementId,
+  message
+) {
+  const element =
+    document.getElementById(elementId);
 
   if (element) {
     element.textContent = message;
@@ -301,10 +421,13 @@ function showSignupError(elementId, message) {
 
 
 /**
- * Clear all field errors.
+ * Clear field errors.
  */
 function clearSignupErrors() {
-  const errors = document.querySelectorAll(".field-error");
+  const errors =
+    document.querySelectorAll(
+      ".field-error"
+    );
 
   errors.forEach((error) => {
     error.textContent = "";
@@ -315,10 +438,16 @@ function clearSignupErrors() {
 
 
 /**
- * Display a general form status.
+ * Display form status.
  */
-function setSignupStatus(message, type) {
-  const status = document.getElementById("signup-status");
+function setSignupStatus(
+  message,
+  type
+) {
+  const status =
+    document.getElementById(
+      "signup-status"
+    );
 
   if (!status) {
     return;
