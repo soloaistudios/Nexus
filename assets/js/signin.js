@@ -18,6 +18,7 @@ export function renderSignin(app) {
       <div class="signin-shell">
 
         <div class="signin-brand">
+
           <img
             class="signin-logo"
             src="assets/icons/cap-logo.png"
@@ -29,21 +30,30 @@ export function renderSignin(app) {
           <p class="signin-tagline">
             P2P Opportunity Exchange
           </p>
+
         </div>
+
 
         <div class="signin-card">
 
           <div class="signin-header">
+
             <h2>Welcome back</h2>
 
             <p>
               Sign in to access your marketplace account.
             </p>
+
           </div>
 
-          <form id="signin-form" novalidate>
+
+          <form
+            id="signin-form"
+            novalidate
+          >
 
             <div class="form-field">
+
               <label for="signin-email">
                 Email address
               </label>
@@ -61,9 +71,12 @@ export function renderSignin(app) {
                 class="field-error"
                 id="signin-email-error"
               ></small>
+
             </div>
 
+
             <div class="form-field">
+
               <label for="signin-password">
                 Password
               </label>
@@ -81,7 +94,9 @@ export function renderSignin(app) {
                 class="field-error"
                 id="signin-password-error"
               ></small>
+
             </div>
+
 
             <button
               type="submit"
@@ -90,6 +105,7 @@ export function renderSignin(app) {
             >
               Sign in
             </button>
+
 
             <div
               id="signin-status"
@@ -100,8 +116,12 @@ export function renderSignin(app) {
 
           </form>
 
+
           <div class="signin-footer">
-            <span>Don't have an account?</span>
+
+            <span>
+              Don't have an account?
+            </span>
 
             <button
               type="button"
@@ -110,9 +130,11 @@ export function renderSignin(app) {
             >
               Create account
             </button>
+
           </div>
 
         </div>
+
 
         <p class="signin-security">
           This is a browser-only prototype. Production
@@ -123,8 +145,15 @@ export function renderSignin(app) {
     </section>
   `;
 
+
+  /* -------------------------------------------------------
+     FORM
+     ------------------------------------------------------- */
+
   const form =
-    document.getElementById("signin-form");
+    document.getElementById(
+      "signin-form"
+    );
 
   if (!form) {
     throw new Error(
@@ -132,26 +161,37 @@ export function renderSignin(app) {
     );
   }
 
+
   form.addEventListener(
     "submit",
     handleSigninSubmit
   );
 
+
+  /* -------------------------------------------------------
+     SIGNUP NAVIGATION
+     ------------------------------------------------------- */
+
   const signupButton =
-    document.getElementById("show-signup");
+    document.getElementById(
+      "show-signup"
+    );
 
   signupButton?.addEventListener(
     "click",
     handleSignupRequest
   );
 
-  /*
-   * If a valid session already exists, don't
-   * automatically pretend the dashboard exists yet.
-   */
-  const existingAccount = getCurrentAccount();
+
+  /* -------------------------------------------------------
+     EXISTING SESSION
+     ------------------------------------------------------- */
+
+  const existingAccount =
+    getCurrentAccount();
 
   if (existingAccount) {
+
     setSigninStatus(
       `You're already signed in as ${existingAccount.email}.`,
       "success"
@@ -160,28 +200,45 @@ export function renderSignin(app) {
 }
 
 
-/**
- * Process the Sign In form.
- */
+/* =========================================================
+   SIGN IN PROCESS
+   ========================================================= */
+
 function handleSigninSubmit(event) {
+
   event.preventDefault();
 
   clearSigninErrors();
 
-  const form = event.currentTarget;
-  const formData = new FormData(form);
 
-  const email = String(
-    formData.get("email") || ""
-  ).trim();
+  const form =
+    event.currentTarget;
 
-  const password = String(
-    formData.get("password") || ""
-  );
+  const formData =
+    new FormData(form);
+
+
+  const email =
+    String(
+      formData.get("email") || ""
+    ).trim();
+
+
+  const password =
+    String(
+      formData.get("password") || ""
+    );
+
 
   let valid = true;
 
+
+  /* -------------------------------------------------------
+     VALIDATION
+     ------------------------------------------------------- */
+
   if (!isValidEmail(email)) {
+
     showSigninError(
       "signin-email-error",
       "Please enter a valid email address."
@@ -190,7 +247,9 @@ function handleSigninSubmit(event) {
     valid = false;
   }
 
+
   if (!password) {
+
     showSigninError(
       "signin-password-error",
       "Please enter your password."
@@ -199,7 +258,9 @@ function handleSigninSubmit(event) {
     valid = false;
   }
 
+
   if (!valid) {
+
     setSigninStatus(
       "Please correct the highlighted fields.",
       "error"
@@ -208,41 +269,66 @@ function handleSigninSubmit(event) {
     return;
   }
 
+
+  /* -------------------------------------------------------
+     AUTHENTICATION
+     ------------------------------------------------------- */
+
   try {
-    const result = signIn({
-      email,
-      password,
-    });
+
+    const result =
+      signIn({
+        email,
+        password,
+      });
+
+
+    /*
+     * Validation checkpoint.
+     */
+    console.log(
+      "CAP SIGN IN SUCCESS:",
+      result
+    );
+
 
     setSigninStatus(
       `Welcome back, ${result.user.fullName}.`,
       "success"
     );
 
+
     disableSigninForm(true);
 
-    /*
-     * Tell the application shell that authentication
-     * succeeded.
-     *
-     * The authenticated dashboard will consume this
-     * event when that module is added.
-     */
+
+    /* -----------------------------------------------------
+       AUTHENTICATED EVENT
+       ----------------------------------------------------- */
+
     window.dispatchEvent(
       new CustomEvent(
         "cap:authenticated",
         {
           detail: {
-            userId: result.user.id,
-            fullName: result.user.fullName,
-            email: result.user.email,
-            sessionId: result.session.sessionId,
+            userId:
+              result.user.id,
+
+            fullName:
+              result.user.fullName,
+
+            email:
+              result.user.email,
+
+            sessionId:
+              result.session.sessionId,
           },
         }
       )
     );
 
+
   } catch (error) {
+
     setSigninStatus(
       error instanceof Error
         ? error.message
@@ -253,10 +339,12 @@ function handleSigninSubmit(event) {
 }
 
 
-/**
- * Request navigation back to Signup.
- */
+/* =========================================================
+   SIGNUP REQUEST
+   ========================================================= */
+
 function handleSignupRequest() {
+
   window.dispatchEvent(
     new CustomEvent(
       "cap:signup-requested"
@@ -265,30 +353,44 @@ function handleSignupRequest() {
 }
 
 
-/**
- * Disable signin controls after success.
- */
+/* =========================================================
+   DISABLE FORM
+   ========================================================= */
+
 function disableSigninForm(disabled) {
+
   const form =
-    document.getElementById("signin-form");
+    document.getElementById(
+      "signin-form"
+    );
 
   if (!form) {
     return;
   }
+
 
   const controls =
     form.querySelectorAll(
       "input, button"
     );
 
-  controls.forEach((control) => {
-    control.disabled = disabled;
-  });
+
+  controls.forEach(
+    (control) => {
+      control.disabled =
+        disabled;
+    }
+  );
+
 
   const submitButton =
-    document.getElementById("signin-submit");
+    document.getElementById(
+      "signin-submit"
+    );
+
 
   if (submitButton) {
+
     submitButton.textContent =
       disabled
         ? "Signed in"
@@ -297,54 +399,73 @@ function disableSigninForm(disabled) {
 }
 
 
-/**
- * Basic email validation.
- */
+/* =========================================================
+   EMAIL VALIDATION
+   ========================================================= */
+
 function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    .test(email);
 }
 
 
-/**
- * Display a field-specific error.
- */
+/* =========================================================
+   FIELD ERROR
+   ========================================================= */
+
 function showSigninError(
   elementId,
   message
 ) {
+
   const element =
-    document.getElementById(elementId);
+    document.getElementById(
+      elementId
+    );
 
   if (element) {
-    element.textContent = message;
+    element.textContent =
+      message;
   }
 }
 
 
-/**
- * Clear all signin field errors.
- */
+/* =========================================================
+   CLEAR ERRORS
+   ========================================================= */
+
 function clearSigninErrors() {
+
   const errors =
     document.querySelectorAll(
       ".field-error"
     );
 
-  errors.forEach((error) => {
-    error.textContent = "";
-  });
 
-  setSigninStatus("", "");
+  errors.forEach(
+    (error) => {
+      error.textContent = "";
+    }
+  );
+
+
+  setSigninStatus(
+    "",
+    ""
+  );
 }
 
 
-/**
- * Display general signin status.
- */
+/* =========================================================
+   STATUS
+   ========================================================= */
+
 function setSigninStatus(
   message,
   type
 ) {
+
   const status =
     document.getElementById(
       "signin-status"
@@ -354,6 +475,10 @@ function setSigninStatus(
     return;
   }
 
-  status.textContent = message;
-  status.dataset.type = type || "";
+
+  status.textContent =
+    message;
+
+  status.dataset.type =
+    type || "";
 }
