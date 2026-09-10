@@ -4,13 +4,25 @@
    ========================================================= */
 
 import { state } from "./state.js";
-import { renderSignup } from "./signup.js";
-import { renderSignin } from "./signin.js";
-import { renderDashboard } from "./dashboard.js";
-import { isSignedIn } from "./auth.js";
+import {
+  renderSignup,
+} from "./signup.js";
+import {
+  renderSignin,
+} from "./signin.js";
+import {
+  renderDashboard,
+} from "./dashboard.js";
+import {
+  isSignedIn,
+  getStoredAccount,
+  signOut,
+} from "./auth.js";
 
 
-const app = document.getElementById("app");
+const app =
+  document.getElementById("app");
+
 
 if (!app) {
   throw new Error(
@@ -75,7 +87,9 @@ function navigate(screen) {
           "CAP: dashboard blocked — no active session."
         );
 
-        navigate(SCREENS.SIGNIN);
+        navigate(
+          SCREENS.SIGNIN
+        );
 
         return;
       }
@@ -177,24 +191,54 @@ function startApp() {
 
   state.app.initialized = true;
 
+
   /*
-   * If a valid local session already exists,
-   * open the dashboard.
+   * IMPORTANT:
+   *
+   * CAP Marketplace does NOT automatically restore
+   * an old browser session on application startup.
+   *
+   * The stored account remains intact.
+   * Only the previous session is cleared so the user
+   * must explicitly sign in again.
+   *
+   * This prevents the application from opening directly
+   * on the dashboard as the previous user.
    */
   if (isSignedIn()) {
 
+    console.log(
+      "CAP: clearing previous startup session."
+    );
+
+    signOut();
+
     state.auth.status =
-      "authenticated";
+      "signed_out";
+
+    state.auth.userId =
+      null;
+
+    state.auth.sessionId =
+      null;
+  }
+
+
+  /*
+   * Existing account → Sign In.
+   */
+  if (getStoredAccount()) {
 
     navigate(
-      SCREENS.DASHBOARD
+      SCREENS.SIGNIN
     );
 
     return;
   }
 
+
   /*
-   * New visitor → Signup.
+   * No account exists → Sign Up.
    */
   navigate(
     SCREENS.SIGNUP
