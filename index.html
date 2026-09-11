@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="theme-color"
+    content="#07101d"
+  />
+
+  <title>CAP Marketplace</title>
+
+
+  <!-- =====================================================
+       GLOBAL DESIGN FOUNDATION
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="assets/css/base.css"
+  />
+
+
+  <!-- =====================================================
+       AUTHENTICATION SCREENS
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="assets/css/signup.css"
+  />
+
+  <link
+    rel="stylesheet"
+    href="assets/css/signin.css"
+  />
+
+
+  <!-- =====================================================
+       AUTHENTICATED DASHBOARD
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="assets/css/dashboard.css"
+  />
+
+
+  <!-- =====================================================
+       P2P MARKETPLACE
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="assets/css/marketplace.css"
+  />
+
+
+  <!-- =====================================================
+       DEBUG CONSOLE
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="assets/css/debug.css"
+  />
+
+
+  <!-- =====================================================
+       TRADE REVIEW / ORDER CREATION
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="assets/css/trade.css"
+  />
+
+
+  <!-- =====================================================
+       WALLET
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="assets/css/wallet.css"
+  />
+
+
+  <!-- =====================================================
+       ORDERS
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="assets/css/orders.css"
+  />
+
+
+  <!-- =====================================================
+       EMERGENCY ERROR CAPTURE
+       ===================================================== -->
+
+  <script>
+    (() => {
+
+      window.__CAP_EMERGENCY_LOGS__ = [];
+
+      function record(
+        type,
+        source,
+        message,
+        details = ""
+      ) {
+
+        window.__CAP_EMERGENCY_LOGS__.push({
+          time:
+            new Date().toISOString(),
+
+          type,
+          source,
+
+          message:
+            String(message),
+
+          details:
+            String(details || "")
+        });
+
+      }
+
+
+      /* -----------------------------------------------
+         RUNTIME ERRORS
+         ----------------------------------------------- */
+
+      window.addEventListener(
+        "error",
+        (event) => {
+
+          record(
+            "ERROR",
+            event.filename ||
+              "WINDOW",
+            event.message ||
+              "Unknown JavaScript error.",
+            event.error?.stack ||
+              `Location: ${
+                event.filename ||
+                "unknown"
+              }:${
+                event.lineno || 0
+              }:${
+                event.colno || 0
+              }`
+          );
+
+        },
+        true
+      );
+
+
+      /* -----------------------------------------------
+         UNHANDLED PROMISE REJECTIONS
+         ----------------------------------------------- */
+
+      window.addEventListener(
+        "unhandledrejection",
+        (event) => {
+
+          record(
+            "ERROR",
+            "UNHANDLED PROMISE",
+            event.reason?.message ||
+              String(
+                event.reason ||
+                "Unknown Promise rejection."
+              ),
+            event.reason?.stack ||
+              ""
+          );
+
+        },
+        true
+      );
+
+
+      /* -----------------------------------------------
+         MODULE / SCRIPT LOAD FAILURES
+         ----------------------------------------------- */
+
+      window.addEventListener(
+        "error",
+        (event) => {
+
+          const target =
+            event.target;
+
+          if (
+            target &&
+            (
+              target.tagName ===
+                "SCRIPT" ||
+              target.tagName ===
+                "LINK"
+            )
+          ) {
+
+            const source =
+              target.src ||
+              target.href ||
+              "Unknown resource";
+
+            record(
+              "ERROR",
+              "RESOURCE LOAD",
+              `Failed to load resource: ${source}`,
+              ""
+            );
+
+          }
+
+        },
+        true
+      );
+
+
+      /* -----------------------------------------------
+         CONSOLE MIRROR
+         ----------------------------------------------- */
+
+      const originalConsoleError =
+        console.error;
+
+      console.error =
+        (...args) => {
+
+          record(
+            "ERROR",
+            "console.error",
+            args
+              .map(
+                value => {
+                  try {
+                    return typeof value ===
+                      "object"
+                      ? JSON.stringify(
+                          value,
+                          null,
+                          2
+                        )
+                      : String(value);
+                  } catch {
+                    return String(value);
+                  }
+                }
+              )
+              .join(" ")
+          );
+
+          originalConsoleError.apply(
+            console,
+            args
+          );
+        };
+
+
+      /*
+       * Marker so we know the emergency layer itself
+       * loaded before application modules.
+       */
+      record(
+        "INFO",
+        "EMERGENCY BOOT",
+        "Emergency error capture initialized."
+      );
+
+    })();
+  </script>
+
+
+  <!-- =====================================================
+       MAIN DEBUG MODULE
+       ===================================================== -->
+
+  <script
+    type="module"
+    src="assets/js/debug.js"
+  ></script>
+
+
+  <!-- =====================================================
+       APPLICATION BOOTSTRAP
+       ===================================================== -->
+
+  <script
+    type="module"
+    src="assets/js/app.js"
+  ></script>
+
+</head>
+
+
+<body>
+
+  <main
+    id="app"
+    aria-live="polite"
+  ></main>
+
+</body>
+
+</html>
