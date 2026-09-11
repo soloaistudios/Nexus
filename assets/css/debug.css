@@ -1,0 +1,817 @@
+/* =========================================================
+   CAP MARKETPLACE
+   GLOBAL DEBUG CONSOLE
+   ========================================================= */
+
+/*
+   This stylesheet belongs in:
+
+   assets/css/debug.css
+
+   It only targets .cap-debug-* classes so it does not
+   interfere with the existing marketplace/auth/dashboard
+   styles.
+*/
+
+
+/* =========================================================
+   DEBUG ROOT
+   ========================================================= */
+
+.cap-debug-root {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+
+  z-index: 999999;
+
+  font-family: inherit;
+}
+
+
+/* =========================================================
+   DEBUG TOGGLE
+   ========================================================= */
+
+.cap-debug-toggle {
+  min-height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 0 12px;
+
+  color: var(--text-primary);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18, 35, 56, 0.98),
+      rgba(7, 16, 29, 0.99)
+    );
+
+  border: 1px solid
+    rgba(77, 163, 255, 0.3);
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 12px 30px
+    rgba(0, 0, 0, 0.32);
+
+  font: inherit;
+  font-size: 10px;
+  font-weight: 850;
+
+  letter-spacing: 0.08em;
+
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.cap-debug-toggle:hover {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    rgba(77, 163, 255, 0.55);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(22, 43, 68, 0.99),
+      rgba(9, 19, 33, 0.99)
+    );
+
+  box-shadow:
+    0 16px 35px
+    rgba(0, 0, 0, 0.38);
+}
+
+.cap-debug-toggle:focus-visible {
+  outline: none;
+
+  box-shadow:
+    0 0 0 3px
+      rgba(77, 163, 255, 0.15),
+    0 12px 30px
+      rgba(0, 0, 0, 0.32);
+}
+
+.cap-debug-toggle-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.cap-debug-toggle-label {
+  line-height: 1;
+}
+
+.cap-debug-count {
+  min-width: 18px;
+  height: 18px;
+
+  display: inline-grid;
+  place-items: center;
+
+  padding: 0 5px;
+
+  color: var(--text-primary);
+
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.06);
+
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   DEBUG PANEL
+   ========================================================= */
+
+.cap-debug-panel {
+  position: absolute;
+
+  right: 0;
+  bottom: 50px;
+
+  width:
+    min(
+      760px,
+      calc(100vw - 28px)
+    );
+
+  max-height:
+    min(
+      78vh,
+      720px
+    );
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transform:
+    translateY(10px)
+    scale(0.985);
+
+  transform-origin:
+    bottom right;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(11, 23, 39, 0.99),
+      rgba(5, 12, 22, 0.99)
+    );
+
+  border:
+    1px solid
+    rgba(77, 163, 255, 0.24);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 25px 80px
+    rgba(0, 0, 0, 0.5);
+
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.cap-debug-panel.is-open {
+  opacity: 1;
+
+  pointer-events: auto;
+
+  transform:
+    translateY(0)
+    scale(1);
+}
+
+
+/* =========================================================
+   PANEL HEADER
+   ========================================================= */
+
+.cap-debug-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 14px 15px;
+
+  background:
+    rgba(255, 255, 255, 0.012);
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.06);
+}
+
+.cap-debug-title-group {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cap-debug-title-group strong {
+  color:
+    var(--text-primary);
+
+  font-size: 11px;
+  font-weight: 850;
+
+  letter-spacing: 0.1em;
+}
+
+.cap-debug-title-group span {
+  color:
+    var(--text-muted);
+
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   HEADER ACTIONS
+   ========================================================= */
+
+.cap-debug-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 6px;
+}
+
+.cap-debug-action,
+.cap-debug-close {
+  min-height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 9px;
+
+  color:
+    var(--text-secondary);
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-radius: 8px;
+
+  font: inherit;
+  font-size: 9px;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.cap-debug-action:hover,
+.cap-debug-close:hover {
+  color:
+    var(--text-primary);
+
+  background:
+    rgba(255, 255, 255, 0.07);
+
+  border-color:
+    rgba(255, 255, 255, 0.15);
+
+  transform:
+    translateY(-1px);
+}
+
+.cap-debug-action:focus-visible,
+.cap-debug-close:focus-visible {
+  outline: none;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(77, 163, 255, 0.12);
+}
+
+.cap-debug-close {
+  width: 30px;
+
+  padding: 0;
+
+  font-size: 17px;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   STATUS BAR
+   ========================================================= */
+
+.cap-debug-status {
+  min-height: 34px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 0 15px;
+
+  color:
+    var(--text-muted);
+
+  background:
+    rgba(255, 255, 255, 0.018);
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.05);
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.cap-debug-status-dot {
+  width: 7px;
+  height: 7px;
+
+  flex: 0 0 7px;
+
+  border-radius: 50%;
+
+  background:
+    var(--success);
+
+  box-shadow:
+    0 0 0 3px
+      rgba(50, 213, 131, 0.08),
+    0 0 10px
+      rgba(50, 213, 131, 0.2);
+}
+
+.cap-debug-status-dot.is-error {
+  background:
+    var(--danger);
+
+  box-shadow:
+    0 0 0 3px
+      rgba(255, 82, 82, 0.08),
+    0 0 12px
+      rgba(255, 82, 82, 0.35);
+}
+
+
+/* =========================================================
+   LOG CONTAINER
+   ========================================================= */
+
+.cap-debug-log {
+  min-height: 120px;
+
+  max-height:
+    520px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  padding: 10px;
+}
+
+.cap-debug-log::-webkit-scrollbar {
+  width: 7px;
+}
+
+.cap-debug-log::-webkit-scrollbar-track {
+  background:
+    transparent;
+}
+
+.cap-debug-log::-webkit-scrollbar-thumb {
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  border-radius: 999px;
+}
+
+.cap-debug-log::-webkit-scrollbar-thumb:hover {
+  background:
+    rgba(255, 255, 255, 0.14);
+}
+
+
+/* =========================================================
+   DEBUG ENTRY
+   ========================================================= */
+
+.cap-debug-entry {
+  margin:
+    0 0 8px;
+
+  padding: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.055);
+
+  border-radius: 9px;
+}
+
+.cap-debug-entry:last-child {
+  margin-bottom: 0;
+}
+
+.cap-debug-entry.is-error {
+  border-color:
+    rgba(255, 82, 82, 0.22);
+
+  background:
+    rgba(255, 82, 82, 0.045);
+}
+
+.cap-debug-entry.is-warn {
+  border-color:
+    rgba(247, 201, 72, 0.18);
+
+  background:
+    rgba(247, 201, 72, 0.035);
+}
+
+.cap-debug-entry.is-event {
+  border-color:
+    rgba(77, 163, 255, 0.15);
+
+  background:
+    rgba(77, 163, 255, 0.025);
+}
+
+.cap-debug-entry.is-info {
+  border-color:
+    rgba(255, 255, 255, 0.055);
+}
+
+
+/* =========================================================
+   ENTRY HEADER
+   ========================================================= */
+
+.cap-debug-entry-top {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 6px;
+}
+
+.cap-debug-entry-level {
+  flex: 0 0 auto;
+
+  padding: 3px 6px;
+
+  border-radius: 5px;
+
+  color:
+    var(--text-secondary);
+
+  background:
+    rgba(255, 255, 255, 0.06);
+
+  font-size: 7px;
+  font-weight: 850;
+
+  letter-spacing: 0.08em;
+  line-height: 1;
+
+  text-transform:
+    uppercase;
+}
+
+.cap-debug-entry.is-error
+.cap-debug-entry-level {
+  color:
+    var(--danger);
+
+  background:
+    rgba(255, 82, 82, 0.08);
+}
+
+.cap-debug-entry.is-warn
+.cap-debug-entry-level {
+  color:
+    var(--warning);
+
+  background:
+    rgba(247, 201, 72, 0.08);
+}
+
+.cap-debug-entry.is-event
+.cap-debug-entry-level {
+  color:
+    var(--accent);
+
+  background:
+    rgba(77, 163, 255, 0.08);
+}
+
+.cap-debug-entry-source {
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  color:
+    var(--accent);
+
+  font-size: 8px;
+  font-weight: 750;
+}
+
+.cap-debug-entry-top time {
+  flex: 0 0 auto;
+
+  margin-left: auto;
+
+  color:
+    var(--text-muted);
+
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ENTRY MESSAGE
+   ========================================================= */
+
+.cap-debug-entry-message {
+  color:
+    var(--text-primary);
+
+  font-size: 10px;
+  font-weight: 600;
+
+  line-height: 1.5;
+
+  word-break:
+    break-word;
+}
+
+
+/* =========================================================
+   STACK TRACE / DETAILS
+   ========================================================= */
+
+.cap-debug-entry-details {
+  max-height:
+    220px;
+
+  margin:
+    8px 0 0;
+
+  padding: 9px;
+
+  overflow:
+    auto;
+
+  color:
+    var(--text-secondary);
+
+  background:
+    rgba(0, 0, 0, 0.18);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.05);
+
+  border-radius: 7px;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    monospace;
+
+  font-size: 8px;
+
+  line-height: 1.55;
+
+  white-space: pre-wrap;
+
+  word-break:
+    break-word;
+}
+
+.cap-debug-entry-details::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.cap-debug-entry-details::-webkit-scrollbar-thumb {
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  border-radius: 999px;
+}
+
+
+/* =========================================================
+   PANEL FOOTER
+   ========================================================= */
+
+.cap-debug-footer {
+  min-height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding: 8px 15px;
+
+  color:
+    var(--text-muted);
+
+  background:
+    rgba(255, 255, 255, 0.012);
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.05);
+
+  font-size: 8px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   ERROR STATE — TOGGLE
+   ========================================================= */
+
+/*
+   When the panel contains errors, this class can be
+   applied by future versions of the debug module.
+*/
+
+.cap-debug-root.has-errors
+.cap-debug-toggle {
+  border-color:
+    rgba(255, 82, 82, 0.3);
+}
+
+.cap-debug-root.has-errors
+.cap-debug-toggle .cap-debug-count {
+  color:
+    var(--danger);
+
+  background:
+    rgba(255, 82, 82, 0.1);
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .cap-debug-root {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .cap-debug-panel {
+    right: 0;
+    bottom: 48px;
+
+    width:
+      calc(100vw - 20px);
+
+    max-height:
+      82vh;
+  }
+
+  .cap-debug-header {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+  }
+
+  .cap-debug-header-actions {
+    width: 100%;
+
+    justify-content:
+      stretch;
+  }
+
+  .cap-debug-action {
+    flex: 1;
+  }
+
+  .cap-debug-close {
+    flex: 0 0 30px;
+  }
+
+  .cap-debug-footer {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 3px;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 440px) {
+
+  .cap-debug-toggle {
+    min-height: 38px;
+
+    padding:
+      0 10px;
+  }
+
+  .cap-debug-panel {
+    width:
+      calc(100vw - 14px);
+
+    right: -3px;
+  }
+
+  .cap-debug-header {
+    padding:
+      12px;
+  }
+
+  .cap-debug-status {
+    padding:
+      0 12px;
+  }
+
+  .cap-debug-log {
+    padding:
+      8px;
+  }
+
+  .cap-debug-entry {
+    padding:
+      9px;
+  }
+
+}
